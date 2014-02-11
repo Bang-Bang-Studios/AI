@@ -1,0 +1,8 @@
+﻿<Window x:Class="Pentago.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Main" Height="319" Width="508" ResizeMode="NoResize" WindowStyle="SingleBorderWindow" WindowStartupLocation="CenterScreen">
+    <Grid Background="#FF767474">
+        <Button Content="Quick Match" Height="34" HorizontalAlignment="Left" Margin="195,128,0,0" Name="btnQuickMatch" VerticalAlignment="Top" Width="100" Click="btnQuickMatch_Click" />
+    </Grid>
+</Window>

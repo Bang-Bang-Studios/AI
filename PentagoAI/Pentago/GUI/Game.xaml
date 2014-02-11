@@ -1,0 +1,19 @@
+﻿<Window x:Class="Pentago.Game"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Game" Height="800" Width="800" WindowStartupLocation="CenterScreen" Background="#FF8E8E8E" WindowStyle="SingleBorderWindow" ResizeMode="NoResize">
+    <Grid>
+        <UniformGrid Name="Board" MouseDown="Board_MouseDown" Height="500" Width="500" Margin="0" Background="White">
+
+        </UniformGrid>
+        <Image Height="65" HorizontalAlignment="Left" Margin="139,50,0,0" Name="btnClockWise1" Stretch="Fill" VerticalAlignment="Top" Width="114"  Visibility="Hidden"  Source="file:///C:/Users/Team7/Documents/Github/GameCore/Pentago/Pentago/GUI/Images/ClockWise1.jpg" MouseDown="btnClockWise1_MouseDown" />
+        <Image Height="113" HorizontalAlignment="Left" Margin="55,130,0,0" Name="btnCounterClockWise1" Stretch="Fill" VerticalAlignment="Top" Width="67" Source="file:///C:/Users/Team7/Documents/Github/GameCore/Pentago/Pentago/GUI/Images/CounterClockWise1.jpg" MouseDown="btnCounterClockWise1_MouseDown" Visibility="Hidden" />
+        <Image Height="65" HorizontalAlignment="Left" Margin="519,50,0,0" Name="btnCounterClockWise2" Stretch="Fill" VerticalAlignment="Top" Width="120" Source="file:///C:/Users/Team7/Documents/Github/GameCore/Pentago/Pentago/GUI/Images/CounterClockWise2.jpg" MouseDown="btnCounterClockWise2_MouseDown" Visibility="Hidden" />
+        <Image Height="113" HorizontalAlignment="Left" Margin="653,130,0,0" Name="btnClockWise2" Stretch="Fill" VerticalAlignment="Top" Width="71" Source="file:///C:/Users/Team7/Documents/Github/GameCore/Pentago/Pentago/GUI/Images/ClockWise2.jpg" MouseDown="btnClockWise2_MouseDown" Visibility="Hidden" />
+        <Image Height="130" HorizontalAlignment="Left" Margin="42,491,0,0" Name="btnClockWise3" Stretch="Fill" VerticalAlignment="Top" Width="69" Source="file:///C:/Users/Team7/Documents/Github/GameCore/Pentago/Pentago/GUI/Images/ClockWise3.jpg" MouseDown="btnClockWise3_MouseDown" Visibility="Hidden" />
+        <Image Height="64" HorizontalAlignment="Left" Margin="139,652,0,0" Name="btnCounterClockWise3" Stretch="Fill" VerticalAlignment="Top" Width="154" Source="file:///C:/Users/Team7/Documents/Github/GameCore/Pentago/Pentago/GUI/Images/CounterClockWise3.jpg" MouseDown="btnCounterClockWise3_MouseDown" Visibility="Hidden" />
+        <Image Height="67" HorizontalAlignment="Left" Margin="480,650,0,0" Name="btnClockWise4" Stretch="Fill" VerticalAlignment="Top" Width="159" Source="file:///C:/Users/Team7/Documents/Github/GameCore/Pentago/Pentago/GUI/Images/ClockWise4.jpg" MouseDown="btnClockWise4_MouseDown" Visibility="Hidden" />
+        <Image Height="139" HorizontalAlignment="Left" Margin="658,491,0,0" Name="btnCounterClockWise4" Stretch="Fill" VerticalAlignment="Top" Width="75" Source="file:///C:/Users/Team7/Documents/Github/GameCore/Pentago/Pentago/GUI/Images/CounterClockWise4.jpg" MouseDown="btnCounterClockWise4_MouseDown" Visibility="Hidden" />
+        <Rectangle Height="58" HorizontalAlignment="Left" Margin="324,12,0,0" Name="ActivePlayer" Stroke="Black" VerticalAlignment="Top" Width="115" />
+    </Grid>
+</Window>
