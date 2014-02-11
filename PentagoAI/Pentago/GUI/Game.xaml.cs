@@ -115,6 +115,8 @@ namespace Pentago
             userMadeRotation = true;
             player1 = new Player("player1", true, Brushes.Green);
             player2 = new Player("player2", false, Brushes.Blue);
+            Console.WriteLine("Active player1: " + player1.ActivePlayer);
+            Console.WriteLine("Active player2: " + player2.ActivePlayer);
             ShowActivePlayer();
         }
 
@@ -166,7 +168,11 @@ namespace Pentago
             btnClockWise4.Visibility = Visibility.Hidden;
             btnCounterClockWise4.Visibility = Visibility.Hidden;
 
+            //Changes turn of player in GameBrain
             gameBrain.ChangeTurn();
+            //Changes turn of player in GUI
+            player1.ActivePlayer = gameBrain.isPlayer1Turn();
+            player2.ActivePlayer = !gameBrain.isPlayer1Turn();
             int winner = gameBrain.CheckForWin();
             if (winner != 0)
                 ShowWinner(winner);
