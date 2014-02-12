@@ -25,6 +25,11 @@ namespace Pentago.GameCore
             return this._board[BOARWIDTH * row + col]; 
         }
 
+        public int GetPlayer(int i)
+        {
+            return this._board[i];
+        }
+
         public int[] GetBoard
         {
             get { return this._board; }
