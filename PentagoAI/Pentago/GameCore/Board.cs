@@ -59,6 +59,11 @@ namespace Pentago.GameCore
             this._board[BOARWIDTH * row + col] = player;
         }
 
+        public void UpdateBoard(int slot, int player)
+        {
+            this._board[slot] = player;
+        }   
+
         public void RotateQuad1ClockWise() 
         {
             int placeHolder = _board[0];

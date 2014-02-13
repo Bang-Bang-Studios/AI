@@ -46,7 +46,7 @@ namespace Pentago
             //page
             player1 = new Player("player1", true, Brushes.Green);
             //player2 = new Player("player2", false, Brushes.Blue);
-            player2 = new computerAI("computerPlayer", false, Brushes.Tomato, 1);
+            player2 = new computerAI("computerPlayer", false, Brushes.Tomato, 2);
             gameBrain = new GameBrain(player1, player2);
             ShowActivePlayer();
         }
@@ -110,9 +110,7 @@ namespace Pentago
                     break;
             }
 
-            MessageBoxResult result = MessageBox.Show(winnerAnnouncement, "Pentago", MessageBoxButton.OK);
-            if (result == MessageBoxResult.OK)
-                StartNewGame();
+            MessageBox.Show(winnerAnnouncement, "Pentago", MessageBoxButton.OK);
         }
 
         private void StartNewGame() 
@@ -121,7 +119,7 @@ namespace Pentago
             RePaintBoard();
             userMadeRotation = true;
             player1 = new Player("player1", true, Brushes.Green);
-            player2 = new computerAI("computerPlayer", false, Brushes.Tomato, 1);
+            player2 = new computerAI("computerPlayer", false, Brushes.Tomato, 2);
             //update players in gameBrain
             gameBrain.ResetPlayers(player1, player2);
             //player2 = new Player("player2", false, Brushes.Blue);
@@ -188,7 +186,7 @@ namespace Pentago
                 ShowActivePlayer();
 
             //if this is a human vs computer game
-            if (player2.ActivePlayer)
+            if (player2.ActivePlayer && winner == 0)
                 GetComputerMove();
             //else wait for user move
         }
@@ -200,9 +198,8 @@ namespace Pentago
             {
                 userMadeRotation = false;
                 //Update GUI player
-                int row = gameBrain.GetComputerRow();
-                int col = gameBrain.GetComputerCol();
-                Rectangle rec = (Rectangle)Board.Children[MAXCOLUMNS * row + col];
+                int computerMove = gameBrain.GetComputerMove();
+                Rectangle rec = (Rectangle)Board.Children[computerMove];
                 if (gameBrain.isPlayer1Turn())
                     rec.Fill = player1.Fill;
                 else
@@ -220,7 +217,6 @@ namespace Pentago
 
         private void GetComputerRotation()
         {
-            //Thread.Sleep(2000);
             gameBrain.MakeComputerRotation();
             MakeRotationsHidden();
             RePaintBoard();

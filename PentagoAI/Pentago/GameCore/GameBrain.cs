@@ -36,13 +36,40 @@ namespace Pentago.GameCore
         public bool MakeComputerMove()
         {
             player2.MakeAIMove(board);
-            //player2.alphaBetaMinimax(board, 0, double.PositiveInfinity, double.NegativeInfinity);
-            //for now, since it is random keep trying to make a move if it valid
-            while (PlacePiece(player2.GetMoveRow(), player2.GetMoveCol()) != true)
+            if (PlacePiece(player2.GetMoveChoice()))
+                return true;
+
+            Console.WriteLine("Something went WRONG! :(");
+            return false;
+        }
+
+        public int GetComputerMove()
+        {
+            return player2.GetMoveChoice();
+        }
+
+        private bool PlacePiece(int slot)
+        {
+            int player;
+            if (player1.ActivePlayer)
+                player = 1;
+            else
+                player = 2;
+
+            if (ValidateMove(slot))
             {
-                //player2.alphaBetaMinimax(board, 0, double.PositiveInfinity, double.NegativeInfinity);
+                board.UpdateBoard(slot, player);
+                return true;
             }
-            return true;
+            else
+                return false;
+        }
+
+        private bool ValidateMove(int slot)
+        {
+            if (board.GetPlayer(slot) == 0)
+                return true;
+            return false;
         }
 
         public void MakeComputerRotation()
@@ -50,16 +77,6 @@ namespace Pentago.GameCore
             bool rotateClockWise = player2.GetRotationDirection();
             short quad = player2.GetCuadrant();
             RotateBoard(rotateClockWise, quad);
-        }
-
-        public int GetComputerRow()
-        {
-            return player2.GetMoveRow();
-        }
-
-        public int GetComputerCol()
-        {
-            return player2.GetMoveCol();
         }
 
         private void InitializeBoard()
@@ -118,7 +135,8 @@ namespace Pentago.GameCore
                 default:
                     break;
             }
-            ChangeTurn();
+            //if (isPlayer1Turn())
+                ChangeTurn();
         }
 
         private bool ValidateMove(short row, short col)

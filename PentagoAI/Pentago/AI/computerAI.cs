@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Media;
+using System.Windows;
 using Pentago.GameCore;
 
 namespace Pentago.AI
 {
     class computerAI
     {
+        //AI player
         private string _Name;
         private bool _ActivePlayer;
         private Brush _Fill;
@@ -18,14 +20,15 @@ namespace Pentago.AI
 
         //board constants
         private const int BOARDSIZE = 36;
+        private const int MAXMOVES = 36;
+        private const int BOARWIDTH = 6;
 
         //Related to the move selected by AI
-        private short _MoveRow;
-        private short _MoveCol;
+        private int _Choice;
         private bool _IsClockWise;
         private short _Quad;
-        private int _Choice;
         private string _Active_Turn = "COMPUTER";
+        private int[] _TempBoard = new int[BOARDSIZE];
 
         public computerAI (string name, bool isActive, Brush fill, int treeDepth)
         {
@@ -37,7 +40,6 @@ namespace Pentago.AI
                 this._DifficultyLevel = Difficulty.Easy;
             else
                 this._DifficultyLevel = Difficulty.Hard;
-            
         }
 
         public bool ActivePlayer
@@ -48,17 +50,20 @@ namespace Pentago.AI
 
         public void MakeAIMove(Board board)
         {
-            int[] tempBoard = new int[BOARDSIZE];
 
             for (int i = 0; i < BOARDSIZE; i++)
-                tempBoard[i] = board.GetPlayer(i);
+                this._TempBoard[i] = board.GetPlayer(i);
 
-            alphaBeta(tempBoard, 0, double.PositiveInfinity, double.NegativeInfinity);
+            alphaBeta(this._TempBoard, 0, double.NegativeInfinity, double.PositiveInfinity);
+            Console.WriteLine("_Choice: " + _Choice);
+            Console.WriteLine("_IsClockWise: " + _IsClockWise);
+            Console.WriteLine("_Quad: " + _Quad);
         }
 
         private double alphaBeta(int[] board, int treeDepth, double alpha, double beta)
         {
-            if (treeDepth == this._MaxTreeDepth)
+            //if statement should check if there is a winner also
+            if (treeDepth == this._MaxTreeDepth || CheckForWin(board) != 0)
                 return GameScore(board, treeDepth);
 
             treeDepth++;
@@ -71,50 +76,27 @@ namespace Pentago.AI
             {
                 for (int i = 0; i < availableMoves.Count; i++)
                 {
-                    for (int c = 0; c < 4; c++)
+                    for (int quadrant = 1; quadrant < 5; quadrant++)
                     {
-                        for (int r = 0; r < 2; r++)
+                        for (int rotationDirection = 0; rotationDirection < 2; rotationDirection++)
                         {
                             move = availableMoves.ElementAt(i);
                             possible_game = PlacePiece(move, board);
-                            switch (c)
-                            {
-                                case 1:
-                                    if (r == 1)
-                                        possible_game = RotateQuad1ClockWise(board);
-                                    else
-                                        possible_game = RotateQuad1CounterClockWise(board);
-                                    break;
-                                case 2:
-                                    if (r == 1)
-                                        possible_game = RotateQuad2ClockWise(board);
-                                    else
-                                        possible_game = RotateQuad2CounterClockWise(board);
-                                    break;
-                                case 3:
-                                    if (r == 1)
-                                        possible_game = RotateQuad3ClockWise(board);
-                                    else
-                                        possible_game = RotateQuad3CounterClockWise(board);
-                                    break;
-                                case 4:
-                                    if (r == 1)
-                                        possible_game = RotateQuad4ClockWise(board);
-                                    else
-                                        possible_game = RotateQuad4CounterClockWise(board);
-                                    break;
-                                default:
-                                        //Magic?
-                                        possible_game = RotateQuad1ClockWise(board);
-                                    break;
-                            }
+                            possible_game = MakeRotation(quadrant, rotationDirection, possible_game);
                             result = alphaBeta(possible_game, treeDepth, alpha, beta);
-                            board = UndoMove(board, move, c, r);
+                            board = UndoMove(board, move, quadrant, rotationDirection);
                             if (result > alpha)
                             {
                                 alpha = result;
-                                if (treeDepth == 0)
+                                if (true)
+                                {
                                     this._Choice = move;
+                                    if (rotationDirection == 0)
+                                        this._IsClockWise = false;
+                                    else
+                                        this._IsClockWise = true;
+                                    this._Quad = (short)quadrant;
+                                }
                             }
                             else if (alpha >= beta)
                             {
@@ -127,31 +109,81 @@ namespace Pentago.AI
             }
             else
             {
-
+                for (int i = 0; i < availableMoves.Count; i++)
+                {
+                    for (int quadrant = 1; quadrant < 5; quadrant++)
+                    {
+                        for (int rotationDirection = 0; rotationDirection < 2; rotationDirection++)
+                        {
+                            move = availableMoves.ElementAt(i);
+                            possible_game = PlacePiece(move, board);
+                            possible_game = MakeRotation(quadrant, rotationDirection, possible_game);
+                            result = alphaBeta(possible_game, treeDepth, alpha, beta);
+                            board = UndoMove(board, move, quadrant, rotationDirection);
+                            if (result < beta)
+                            {
+                                beta = result;
+                                if (true) 
+                                {
+                                    this._Choice = move;
+                                    if (rotationDirection == 0)
+                                        this._IsClockWise = false;
+                                    else
+                                        this._IsClockWise = true;
+                                    this._Quad = (short)quadrant;
+                                }
+                            }
+                            else if (beta <= alpha)
+                            {
+                                return beta;
+                            }
+                        }
+                    }
+                }
+                return beta;
             }
+        }
 
-
-
-            /*
-            Random rnd = new Random();
-            //random row from 0 - 5
-            _MoveRow = (short)rnd.Next(0, 6);
-            //random col from 0 - 5
-            _MoveCol = (short)rnd.Next(0, 6);
-
-            if (rnd.Next(0, 2) == 0)
-                _IsClockWise = false;
-            else
-                _IsClockWise = true;
-            //rando quad from 1-4
-            _Quad = (short)rnd.Next(1,5);
-            */
-            return 0;
+        private int[] MakeRotation(int quadrant, int rotationDirection, int[] board)
+        {
+            int[] possible_game;
+            switch (quadrant)
+            {
+                case 1:
+                    if (rotationDirection == 1)
+                        possible_game = RotateQuad1ClockWise(board);
+                    else
+                        possible_game = RotateQuad1CounterClockWise(board);
+                    break;
+                case 2:
+                    if (rotationDirection == 1)
+                        possible_game = RotateQuad2ClockWise(board);
+                    else
+                        possible_game = RotateQuad2CounterClockWise(board);
+                    break;
+                case 3:
+                    if (rotationDirection == 1)
+                        possible_game = RotateQuad3ClockWise(board);
+                    else
+                        possible_game = RotateQuad3CounterClockWise(board);
+                    break;
+                case 4:
+                    if (rotationDirection == 1)
+                        possible_game = RotateQuad4ClockWise(board);
+                    else
+                        possible_game = RotateQuad4CounterClockWise(board);
+                    break;
+                default:
+                    //just to make compiler happy
+                    possible_game = RotateQuad1ClockWise(board);
+                    break;
+            }
+            ChangeTurn();
+            return possible_game;
         }
 
         private int[] UndoMove(int[] board, int move, int c, int r)
         {
-            board[move] = 0;
             switch (c)
             {
                 case 1:
@@ -179,35 +211,33 @@ namespace Pentago.AI
                         board = RotateQuad4CounterClockWise(board);
                     break;
                 default:
-                    //Magic?
+                    //just to make compiler happy
                     board = RotateQuad1ClockWise(board);
                     break;
             }
+            board[move] = 0;
+            ChangeTurn();
             return board;
         }
 
         private int[] PlacePiece(int move, int[] board)
         {
-            int piece = ChangeTurn();
+            int piece;
+            if (_Active_Turn == "COMPUTER")
+                piece = 2;
+            else
+                piece = 1;
+
             board[move] = piece;
             return board;
         }
 
-        private int ChangeTurn()
+        private void ChangeTurn()
         {
-            int piece;
             if (_Active_Turn == "COMPUTER")
-            {
-                piece = 2;
                 _Active_Turn = "HUMAN";
-            }
             else
-            {
-                piece = 1;
                 _Active_Turn = "COMPUTER";
-            }
-
-            return piece;
         }
 
         private List<int> GetAvailableMoves(int[] board)
@@ -366,9 +396,105 @@ namespace Pentago.AI
             return board;
         }
 
+        //A line is how many pieces a user has side by side
+        //either horizontal, vertical or diagonal
         private int GameScore(int[] board, int treeDepth)
         {
-            return 1;
+            int score = 0;
+            int checkWinner = CheckForWin(board);
+            if (checkWinner == 1)
+                score += -100000;
+            else if (checkWinner == 2)
+                score += 100000;
+            else
+            {
+                score += CheckHorizontalOf2Lines(board);
+                score += CheckHorizontalOf3Lines(board);
+                score += CheckHorizontalOf4Lines(board);
+                score += CheckVerticalOf2Lines(board);
+                score += CheckVerticalOf3Lines(board);
+                score += CheckVerticalOf4Lines(board);
+            }
+
+            return score;
+        }
+
+        private int CheckHorizontalOf2Lines(int[] board)
+        {
+            int count = 0;
+            for (int i = 0; i < BOARDSIZE - 2; i++)
+            {
+                if (board[i] == 2 && board[i + 1] == 2)
+                    count += 4;
+                if (board[i] == 1 && board[i + 1] == 1)
+                    count -= 4;
+            }
+            return count;
+        }
+
+        private int CheckHorizontalOf3Lines(int[] board)
+        {
+            int count = 0;
+            for (int i = 0; i < BOARDSIZE - 3; i++)
+            {
+                if (board[i] == 2 && board[i + 1] == 2 && board[i + 2] == 2)
+                    count += 6;
+                if (board[i] == 1 && board[i + 1] == 1 && board[i + 2] == 1)
+                    count -= 6;
+            }
+            return count;
+        }
+
+        private int CheckHorizontalOf4Lines(int[] board)
+        {
+            int count = 0;
+            for (int i = 0; i < BOARDSIZE - 4; i++)
+            {
+                if (board[i] == 2 && board[i + 1] == 2 && board[i + 2] == 2 && board[i + 3] == 2)
+                    count += 8;
+                if (board[i] == 1 && board[i + 1] == 1 && board[i + 2] == 1 && board[i + 3] == 1)
+                    count -= 8;
+            }
+            return count;
+        }
+
+        private int CheckVerticalOf2Lines(int[] board)
+        {
+            int count = 0;
+            for (int i = 0; i < BOARDSIZE - 6; i++)
+            {
+                if (board[i] == 2 && board[i + 6] == 2)
+                    count += 4;
+                if (board[i] == 1 && board[i + 6] == 1)
+                    count -= 4;
+            }
+            return count;
+        }
+
+        private int CheckVerticalOf3Lines(int[] board)
+        {
+            int count = 0;
+            for (int i = 0; i < BOARDSIZE - 12; i++)
+            {
+                if (board[i] == 2 && board[i + 6] == 2 && board[i + 12] == 2)
+                    count += 6;
+                if (board[i] == 1 && board[i + 6] == 1 && board[i + 12] == 1)
+                    count -= 6;
+            }
+            return count;
+        }
+
+        private int CheckVerticalOf4Lines(int[] board)
+        {
+            int count = 0;
+            for (int i = 0; i < BOARDSIZE - 18; i++)
+            {
+                if (board[i] == 2 && board[i + 6] == 2 && board[i + 12] == 2 && board[i + 18] == 2)
+                    count += 8;
+                if (board[i] == 1 && board[i + 6] == 1 && board[i + 12] == 1 && board[i + 18] == 1)
+                    count -= 8;
+            }
+            return count;
         }
 
         public string Name
@@ -381,14 +507,9 @@ namespace Pentago.AI
             get { return this._Fill; }
         }
 
-        public short GetMoveRow()
+        public int GetMoveChoice()
         {
-            return this._MoveRow;
-        }
-
-        public short GetMoveCol()
-        {
-            return this._MoveCol;
+            return this._Choice;
         }
 
         public bool GetRotationDirection()
@@ -399,6 +520,289 @@ namespace Pentago.AI
         public short GetCuadrant()
         {
             return this._Quad;
+        }
+
+
+        public int CheckForWin(int[] board)
+        {
+            bool res = true;
+            bool p1w = false;
+            bool p2w = false;
+            bool tie = false;
+            int numMoves = 0;
+            for (int i = 0; i < BOARDSIZE; i++)
+                if (board[i] != 0)
+                    numMoves++;
+
+            if (numMoves >= 9) // First check to see if it's even possible to win (Fifth move for player 1)
+            {
+                // Check for horizontal win. If no win, continue to checking vert and diag.
+                int horiz = CheckHorizontals();
+                if (horiz == 0) // No one won on a horizontal. Check for verticals.
+                {
+
+                }
+                else if (horiz == 1) // Player 1 won on a horizontal
+                {
+                    p1w = true;
+                    res = false;
+                }
+                else if (horiz == 2) // Player 2 wins on a horizontal
+                {
+                    p2w = true;
+                    res = false;
+                }
+                else
+                {
+                    tie = true;
+                    res = false;
+                }
+
+                int vert = CheckVerticals();
+
+                if (vert == 0) // No one won on a vertical. Check for diagonals.
+                {
+
+                }
+                else if (vert == 1) // Player 1 won on a vertical
+                {
+                    p1w = true;
+                    res = false;
+                }
+                else if (vert == 2) // Player 2 won on a vertical
+                {
+                    p2w = true;
+                    res = false;
+                }
+                else // vert is 3 (A tie was caused by the move)
+                {
+                    tie = true;
+                    res = false;
+                }
+
+                int diag = CheckDiags();
+                if (diag == 0) // No one won on a diagonal. Check to see if it's possible to make more moves.
+                {
+                }
+                else if (diag == 1) // Player 1 won on a diagonal
+                {
+                    p1w = true;
+                    res = false;
+                }
+                else if (diag == 2) // Player 2 won on a diagonal
+                {
+                    p2w = true;
+                    res = false;
+                }
+                else // diag is 3 (A tie was caused by the move)
+                {
+                    tie = true;
+                    res = false;
+                }
+
+
+                if (res && numMoves < MAXMOVES)
+                {
+                    return 0; // The game continues
+                }
+                if (tie || (p1w && p2w))
+                {
+                    return 3;
+                }
+                if (p1w)
+                {
+                    return 1;
+                }
+                if (p2w)
+                {
+                    return 2;
+                }
+                if (numMoves == MAXMOVES)
+                {
+                    return 3;
+                }
+            }
+            return 0;
+        }
+
+        private int CheckHorizontals()
+        {
+            bool res = true;
+            bool p1w = false;
+            bool p2w = false;
+
+            int returnValue = 0;
+            short[] possibilities = new short[12];
+            possibilities[0] = (short)CheckPiecesOnBoard(new Point(0, 0), new Point(0, 1), new Point(0, 2), new Point(0, 3), new Point(0, 4));
+            possibilities[1] = (short)CheckPiecesOnBoard(new Point(0, 1), new Point(0, 2), new Point(0, 3), new Point(0, 4), new Point(0, 5));
+            possibilities[2] = (short)CheckPiecesOnBoard(new Point(1, 0), new Point(1, 1), new Point(1, 2), new Point(1, 3), new Point(1, 4));
+            possibilities[3] = (short)CheckPiecesOnBoard(new Point(1, 1), new Point(1, 2), new Point(1, 3), new Point(1, 4), new Point(1, 5));
+            possibilities[4] = (short)CheckPiecesOnBoard(new Point(2, 0), new Point(2, 1), new Point(2, 2), new Point(2, 3), new Point(2, 4));
+            possibilities[5] = (short)CheckPiecesOnBoard(new Point(2, 1), new Point(2, 2), new Point(2, 3), new Point(2, 4), new Point(2, 5));
+            possibilities[6] = (short)CheckPiecesOnBoard(new Point(3, 0), new Point(3, 1), new Point(3, 2), new Point(3, 3), new Point(3, 4));
+            possibilities[7] = (short)CheckPiecesOnBoard(new Point(3, 1), new Point(3, 2), new Point(3, 3), new Point(3, 4), new Point(3, 5));
+            possibilities[8] = (short)CheckPiecesOnBoard(new Point(4, 0), new Point(4, 1), new Point(4, 2), new Point(4, 3), new Point(4, 4));
+            possibilities[9] = (short)CheckPiecesOnBoard(new Point(4, 1), new Point(4, 2), new Point(4, 3), new Point(4, 4), new Point(4, 5));
+            possibilities[10] = (short)CheckPiecesOnBoard(new Point(5, 0), new Point(5, 1), new Point(5, 2), new Point(5, 3), new Point(5, 4));
+            possibilities[11] = (short)CheckPiecesOnBoard(new Point(5, 1), new Point(5, 2), new Point(5, 3), new Point(5, 4), new Point(5, 5));
+
+            foreach (short s in possibilities)
+            {
+                if (s == 1)
+                {
+                    p1w = true;
+                    res = false;
+                }
+                if (s == 2)
+                {
+                    p2w = true;
+                    res = false;
+                }
+            }
+
+            if (res)
+            {
+                return 0;
+            }
+            if (p1w && p2w)
+            {
+                return 3;
+            }
+            if (p1w)
+            {
+                return 1;
+            }
+            if (p2w)
+            {
+                return 2;
+            }
+            return returnValue;
+        }
+
+        private int CheckVerticals()
+        {
+            bool res = true;
+            bool p1w = false;
+            bool p2w = false;
+
+            int returnValue = 0;
+            short[] possibilities = new short[12];
+
+            possibilities[0] = (short)CheckPiecesOnBoard(new Point(0, 0), new Point(1, 0), new Point(2, 0), new Point(3, 0), new Point(4, 0));
+            possibilities[1] = (short)CheckPiecesOnBoard(new Point(1, 0), new Point(2, 0), new Point(3, 0), new Point(4, 0), new Point(5, 0));
+            possibilities[2] = (short)CheckPiecesOnBoard(new Point(0, 1), new Point(1, 1), new Point(2, 1), new Point(3, 1), new Point(4, 1));
+            possibilities[3] = (short)CheckPiecesOnBoard(new Point(1, 1), new Point(2, 1), new Point(3, 1), new Point(4, 1), new Point(5, 1));
+            possibilities[4] = (short)CheckPiecesOnBoard(new Point(0, 2), new Point(1, 2), new Point(2, 2), new Point(3, 2), new Point(4, 2));
+            possibilities[5] = (short)CheckPiecesOnBoard(new Point(1, 2), new Point(2, 2), new Point(3, 2), new Point(4, 2), new Point(5, 2));
+            possibilities[6] = (short)CheckPiecesOnBoard(new Point(0, 3), new Point(1, 3), new Point(2, 3), new Point(3, 3), new Point(4, 3));
+            possibilities[7] = (short)CheckPiecesOnBoard(new Point(1, 3), new Point(2, 3), new Point(3, 3), new Point(4, 3), new Point(5, 3));
+            possibilities[8] = (short)CheckPiecesOnBoard(new Point(0, 4), new Point(1, 4), new Point(2, 4), new Point(3, 4), new Point(4, 4));
+            possibilities[9] = (short)CheckPiecesOnBoard(new Point(1, 4), new Point(2, 4), new Point(3, 4), new Point(4, 4), new Point(5, 4));
+            possibilities[10] = (short)CheckPiecesOnBoard(new Point(0, 5), new Point(1, 5), new Point(2, 5), new Point(3, 5), new Point(4, 5));
+            possibilities[11] = (short)CheckPiecesOnBoard(new Point(1, 5), new Point(2, 5), new Point(3, 5), new Point(4, 5), new Point(5, 5));
+
+            foreach (short s in possibilities)
+            {
+                if (s == 1)
+                {
+                    p1w = true;
+                    res = false;
+                }
+                if (s == 2)
+                {
+                    p2w = true;
+                    res = false;
+                }
+            }
+
+            if (res)
+            {
+                return 0;
+            }
+            if (p1w && p2w)
+            {
+                return 3;
+            }
+            if (p1w)
+            {
+                return 1;
+            }
+            if (p2w)
+            {
+                return 2;
+            }
+            return returnValue;
+        }
+
+        private int CheckDiags()
+        {
+            bool res = true;
+            bool p1w = false;
+            bool p2w = false;
+
+            int returnValue = 0;
+            short[] possibilities = new short[8];
+
+            // Top Left to Bottom Rights
+            possibilities[0] = (short)CheckPiecesOnBoard(new Point(0, 1), new Point(1, 2), new Point(2, 3), new Point(3, 4), new Point(4, 5));
+            possibilities[1] = (short)CheckPiecesOnBoard(new Point(0, 0), new Point(1, 1), new Point(2, 2), new Point(3, 3), new Point(4, 4));
+            possibilities[2] = (short)CheckPiecesOnBoard(new Point(1, 1), new Point(2, 2), new Point(3, 3), new Point(4, 4), new Point(5, 5));
+            possibilities[3] = (short)CheckPiecesOnBoard(new Point(1, 0), new Point(2, 1), new Point(3, 2), new Point(4, 3), new Point(5, 4));
+
+            // Bottom Left to Top Rights
+            possibilities[4] = (short)CheckPiecesOnBoard(new Point(0, 4), new Point(1, 3), new Point(2, 2), new Point(3, 1), new Point(4, 0));
+            possibilities[5] = (short)CheckPiecesOnBoard(new Point(0, 5), new Point(1, 4), new Point(2, 3), new Point(3, 2), new Point(4, 1));
+            possibilities[6] = (short)CheckPiecesOnBoard(new Point(1, 4), new Point(2, 3), new Point(3, 2), new Point(4, 1), new Point(5, 0));
+            possibilities[7] = (short)CheckPiecesOnBoard(new Point(1, 5), new Point(2, 4), new Point(3, 3), new Point(4, 2), new Point(5, 1));
+
+            foreach (short s in possibilities)
+            {
+                if (s == 1)
+                {
+                    p1w = true;
+                    res = false;
+                }
+                if (s == 2)
+                {
+                    p2w = true;
+                    res = false;
+                }
+            }
+
+            if (res)
+            {
+                return 0;
+            }
+            if (p1w && p2w)
+            {
+                return 3;
+            }
+            if (p1w)
+            {
+                return 1;
+            }
+            if (p2w)
+            {
+                return 2;
+            }
+            return returnValue;
+
+        }
+
+        private int CheckPiecesOnBoard(Point piece1, Point piece2, Point piece3, Point piece4, Point piece5)
+        {
+            int playerAtPiece1 = _TempBoard[BOARWIDTH * (int)piece1.X + (int)piece1.Y];
+            int playerAtPiece2 = _TempBoard[BOARWIDTH * (int)piece2.X + (int)piece2.Y];
+            int playerAtPiece3 = _TempBoard[BOARWIDTH * (int)piece3.X + (int)piece3.Y];
+            int playerAtPiece4 = _TempBoard[BOARWIDTH * (int)piece4.X + (int)piece4.Y];
+            int playerAtPiece5 = _TempBoard[BOARWIDTH * (int)piece5.X + (int)piece5.Y];
+
+            if (playerAtPiece1 == playerAtPiece2 && playerAtPiece2 == playerAtPiece3 &&
+                playerAtPiece3 == playerAtPiece4 && playerAtPiece4 == playerAtPiece5)
+            {
+                return playerAtPiece1;
+            }
+            return 0;
         }
     }
 }
