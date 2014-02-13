@@ -46,7 +46,7 @@ namespace Pentago
             //page
             player1 = new Player("player1", true, Brushes.Green);
             //player2 = new Player("player2", false, Brushes.Blue);
-            player2 = new computerAI("computerPlayer", false, Brushes.Tomato, 2);
+            player2 = new computerAI("computerPlayer", false, Brushes.Tomato, 3);
             gameBrain = new GameBrain(player1, player2);
             ShowActivePlayer();
         }
@@ -119,7 +119,7 @@ namespace Pentago
             RePaintBoard();
             userMadeRotation = true;
             player1 = new Player("player1", true, Brushes.Green);
-            player2 = new computerAI("computerPlayer", false, Brushes.Tomato, 2);
+            player2 = new computerAI("computerPlayer", false, Brushes.Tomato, 3);
             //update players in gameBrain
             gameBrain.ResetPlayers(player1, player2);
             //player2 = new Player("player2", false, Brushes.Blue);
