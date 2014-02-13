@@ -59,7 +59,7 @@ namespace Pentago.AI
             alphaBeta(this._TempBoard, 0, double.NegativeInfinity, double.PositiveInfinity);
             sw.Stop();
 
-            Console.WriteLine("Time taken: " + sw.Elapsed.TotalSeconds);
+            Console.WriteLine("Time taken: " + sw.Elapsed.TotalSeconds + " seconds.");
             //Console.WriteLine("_Choice: " + _Choice);
             //Console.WriteLine("_IsClockWise: " + _IsClockWise);
            // Console.WriteLine("_Quad: " + _Quad);
@@ -250,22 +250,18 @@ namespace Pentago.AI
         {
             List<int> possibleMoves = new List<int>();
             for (int i = 0; i < BOARDSIZE; i++)
-            {
                 if (board[i] == 0)
                     possibleMoves.Add(i);
-            }
             return possibleMoves;
         }
 
         private int[] RotateQuad1ClockWise(int[] board)
         {
             int placeHolder = board[0];
-
             board[0] = board[12];
             board[12] = board[14];
             board[14] = board[2];
             board[2] = placeHolder;
-
             placeHolder = board[6];
             board[6] = board[13];
             board[13] = board[8];
@@ -278,12 +274,10 @@ namespace Pentago.AI
         private int[] RotateQuad1CounterClockWise(int[] board)
         {
             int placeHolder = board[0];
-
             board[0] = board[2];
             board[2] = board[14];
             board[14] = board[12];
             board[12] = placeHolder;
-
             placeHolder = board[6];
             board[6] = board[1];
             board[1] = board[8];
@@ -297,12 +291,10 @@ namespace Pentago.AI
         {
 
             int placeHolder = board[3];
-
             board[3] = board[15];
             board[15] = board[17];
             board[17] = board[5];
             board[5] = placeHolder;
-
             placeHolder = board[4];
             board[4] = board[9];
             board[9] = board[16];
@@ -315,12 +307,10 @@ namespace Pentago.AI
         private int[] RotateQuad2CounterClockWise(int[] board)
         {
             int placeholder = board[3];
-
             board[3] = board[5];
             board[5] = board[17];
             board[17] = board[15];
             board[15] = placeholder;
-
             placeholder = board[4];
             board[4] = board[11];
             board[11] = board[16];
@@ -333,12 +323,10 @@ namespace Pentago.AI
         private int[] RotateQuad3ClockWise(int[] board)
         {
             int placeHolder = board[18];
-
             board[18] = board[30];
             board[30] = board[32];
             board[32] = board[20];
             board[20] = placeHolder;
-
             placeHolder = board[24];
             board[24] = board[31];
             board[31] = board[26];
@@ -351,12 +339,10 @@ namespace Pentago.AI
         private int[] RotateQuad3CounterClockWise(int[] board)
         {
             int placeHolder = board[18];
-
             board[18] = board[20];
             board[20] = board[32];
             board[32] = board[30];
             board[30] = placeHolder;
-
             placeHolder = board[24];
             board[24] = board[19];
             board[19] = board[26];
@@ -369,12 +355,10 @@ namespace Pentago.AI
         private int[] RotateQuad4ClockWise(int[] board)
         {
             int placeholder = board[21];
-
             board[21] = board[33];
             board[33] = board[35];
             board[35] = board[23];
             board[23] = placeholder;
-
             placeholder = board[22];
             board[22] = board[27];
             board[27] = board[34];
@@ -387,12 +371,10 @@ namespace Pentago.AI
         private int[] RotateQuad4CounterClockWise(int[] board)
         {
             int placeholder = board[21];
-
             board[21] = board[23];
             board[23] = board[35];
             board[35] = board[33];
             board[33] = placeholder;
-
             placeholder = board[22];
             board[22] = board[29];
             board[29] = board[34];
@@ -444,10 +426,8 @@ namespace Pentago.AI
         {
             int count = 0;
             for (int i = 0; i < BOARDSIZE - 2; i++)
-            {
                 if (board[i] == piece && board[i + 1] == piece)
                     count += 4;
-            }
             return count;
         }
 
@@ -455,10 +435,8 @@ namespace Pentago.AI
         {
             int count = 0;
             for (int i = 0; i < BOARDSIZE - 3; i++)
-            {
                 if (board[i] == piece && board[i + 1] == piece && board[i + 2] == piece)
                     count += 6;
-            }
             return count;
         }
 
@@ -466,10 +444,8 @@ namespace Pentago.AI
         {
             int count = 0;
             for (int i = 0; i < BOARDSIZE - 4; i++)
-            {
                 if (board[i] == piece && board[i + 1] == piece && board[i + 2] == piece && board[i + 3] == piece)
                     count += 8;
-            }
             return count;
         }
 
@@ -477,10 +453,8 @@ namespace Pentago.AI
         {
             int count = 0;
             for (int i = 0; i < BOARDSIZE - 6; i++)
-            {
                 if (board[i] == piece && board[i + 6] == piece)
                     count += 4;
-            }
             return count;
         }
 
@@ -488,10 +462,8 @@ namespace Pentago.AI
         {
             int count = 0;
             for (int i = 0; i < BOARDSIZE - 12; i++)
-            {
                 if (board[i] == piece && board[i + 6] == piece && board[i + 12] == piece)
                     count += 6;
-            }
             return count;
         }
 
@@ -499,10 +471,8 @@ namespace Pentago.AI
         {
             int count = 0;
             for (int i = 0; i < BOARDSIZE - 18; i++)
-            {
                 if (board[i] == piece && board[i + 6] == piece && board[i + 12] == piece && board[i + 18] == piece)
                     count += 8;
-            }
             return count;
         }
 
@@ -568,7 +538,6 @@ namespace Pentago.AI
                 }
 
                 int vert = CheckVerticals();
-
                 if (vert == 0) // No one won on a vertical. Check for diagonals.
                 {
 
@@ -609,27 +578,16 @@ namespace Pentago.AI
                     res = false;
                 }
 
-
                 if (res && numMoves < MAXMOVES)
-                {
                     return 0; // The game continues
-                }
                 if (tie || (p1w && p2w))
-                {
                     return 3;
-                }
                 if (p1w)
-                {
                     return 1;
-                }
                 if (p2w)
-                {
                     return 2;
-                }
                 if (numMoves == MAXMOVES)
-                {
                     return 3;
-                }
             }
             return 0;
         }
@@ -670,21 +628,13 @@ namespace Pentago.AI
             }
 
             if (res)
-            {
                 return 0;
-            }
             if (p1w && p2w)
-            {
                 return 3;
-            }
             if (p1w)
-            {
                 return 1;
-            }
             if (p2w)
-            {
                 return 2;
-            }
             return returnValue;
         }
 
@@ -696,7 +646,6 @@ namespace Pentago.AI
 
             int returnValue = 0;
             short[] possibilities = new short[12];
-
             possibilities[0] = (short)CheckPiecesOnBoard(new Point(0, 0), new Point(1, 0), new Point(2, 0), new Point(3, 0), new Point(4, 0));
             possibilities[1] = (short)CheckPiecesOnBoard(new Point(1, 0), new Point(2, 0), new Point(3, 0), new Point(4, 0), new Point(5, 0));
             possibilities[2] = (short)CheckPiecesOnBoard(new Point(0, 1), new Point(1, 1), new Point(2, 1), new Point(3, 1), new Point(4, 1));
@@ -725,21 +674,13 @@ namespace Pentago.AI
             }
 
             if (res)
-            {
                 return 0;
-            }
             if (p1w && p2w)
-            {
                 return 3;
-            }
             if (p1w)
-            {
                 return 1;
-            }
             if (p2w)
-            {
                 return 2;
-            }
             return returnValue;
         }
 
@@ -757,7 +698,6 @@ namespace Pentago.AI
             possibilities[1] = (short)CheckPiecesOnBoard(new Point(0, 0), new Point(1, 1), new Point(2, 2), new Point(3, 3), new Point(4, 4));
             possibilities[2] = (short)CheckPiecesOnBoard(new Point(1, 1), new Point(2, 2), new Point(3, 3), new Point(4, 4), new Point(5, 5));
             possibilities[3] = (short)CheckPiecesOnBoard(new Point(1, 0), new Point(2, 1), new Point(3, 2), new Point(4, 3), new Point(5, 4));
-
             // Bottom Left to Top Rights
             possibilities[4] = (short)CheckPiecesOnBoard(new Point(0, 4), new Point(1, 3), new Point(2, 2), new Point(3, 1), new Point(4, 0));
             possibilities[5] = (short)CheckPiecesOnBoard(new Point(0, 5), new Point(1, 4), new Point(2, 3), new Point(3, 2), new Point(4, 1));
@@ -779,23 +719,14 @@ namespace Pentago.AI
             }
 
             if (res)
-            {
                 return 0;
-            }
             if (p1w && p2w)
-            {
                 return 3;
-            }
             if (p1w)
-            {
                 return 1;
-            }
             if (p2w)
-            {
                 return 2;
-            }
             return returnValue;
-
         }
 
         private int CheckPiecesOnBoard(Point piece1, Point piece2, Point piece3, Point piece4, Point piece5)
@@ -808,9 +739,7 @@ namespace Pentago.AI
 
             if (playerAtPiece1 == playerAtPiece2 && playerAtPiece2 == playerAtPiece3 &&
                 playerAtPiece3 == playerAtPiece4 && playerAtPiece4 == playerAtPiece5)
-            {
                 return playerAtPiece1;
-            }
             return 0;
         }
     }
