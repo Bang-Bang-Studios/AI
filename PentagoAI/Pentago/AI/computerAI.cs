@@ -6,6 +6,7 @@ using System.Windows.Media;
 using System.Windows;
 using Pentago.GameCore;
 using System.Diagnostics;
+using System.Threading;
 
 namespace Pentago.AI
 {
@@ -57,8 +58,8 @@ namespace Pentago.AI
 
             Stopwatch sw = Stopwatch.StartNew();
             alphaBeta(this._TempBoard, 0, double.NegativeInfinity, double.PositiveInfinity);
-            sw.Stop();
 
+            sw.Stop();
             Console.WriteLine("Time taken: " + sw.Elapsed.TotalSeconds + " seconds.");
             //Console.WriteLine("_Choice: " + _Choice);
             //Console.WriteLine("_IsClockWise: " + _IsClockWise);
@@ -255,6 +256,93 @@ namespace Pentago.AI
             return possibleMoves;
         }
 
+        //A line is how many pieces a user has side by side
+        //either horizontally or vertically
+        private int GameScore(int[] board, int treeDepth)
+        {
+            int newScore = 0;
+            int piece;
+            int checkWinner = CheckForWin(board);
+            //tie score?
+            if (checkWinner == 1)
+                newScore += -9999;
+            else if (checkWinner == 2)
+                newScore += 9999;
+            else
+            {
+                if (_Active_Turn == "COMPUTER")
+                {
+                    piece = 2;
+                    newScore += CheckForPiecesLines(board, piece);
+                }
+                else
+                {
+                    piece = 1;
+                    newScore -= CheckForPiecesLines(board, piece);
+                }
+            }
+            return newScore;
+        }
+
+        private int CheckForPiecesLines(int[] board, int piece)
+        {
+            int count = 0;
+            for (int i = 0; i < BOARDSIZE; i++)
+            {
+                //Horizontal pieces
+                if (i < BOARDSIZE - 2)
+                {
+                    if (board[i] == piece && board[i + 1] == piece)
+                        count += 4;
+                    if (i < BOARDSIZE - 3)
+                        if (board[i] == piece && board[i + 1] == piece && board[i + 2] == piece)
+                            count += 6;
+                    if (i < BOARDSIZE - 4)
+                        if (board[i] == piece && board[i + 1] == piece && board[i + 2] == piece && board[i + 3] == piece)
+                            count += 8;
+                }
+                //Vertical pieces
+                if (i < BOARDSIZE - 6)
+                {
+                    if (board[i] == piece && board[i + 6] == piece)
+                        count += 4;
+                    if (i < BOARDSIZE - 12)
+                        if (board[i] == piece && board[i + 6] == piece && board[i + 12] == piece)
+                            count += 6;
+                    if (i < BOARDSIZE - 18)
+                        if (board[i] == piece && board[i + 6] == piece && board[i + 12] == piece && board[i + 18] == piece)
+                            count += 8;
+                }
+            }
+            return count;
+        }
+        public string Name
+        {
+            get { return this._Name; }
+        }
+
+        public Brush Fill
+        {
+            get { return this._Fill; }
+        }
+
+        public int GetMoveChoice()
+        {
+            return this._Choice;
+        }
+
+        public bool GetRotationDirection()
+        {
+            return this._IsClockWise;
+        }
+
+        public short GetCuadrant()
+        {
+            return this._Quad;
+        }
+
+        #region
+        //All about board rotations and check for winner
         private int[] RotateQuad1ClockWise(int[] board)
         {
             int placeHolder = board[0];
@@ -383,124 +471,6 @@ namespace Pentago.AI
 
             return board;
         }
-
-        //A line is how many pieces a user has side by side
-        //either horizontal, vertical or diagonal
-        private int GameScore(int[] board, int treeDepth)
-        {
-            int score = 0;
-            int checkWinner = CheckForWin(board);
-            //tie score?
-            if (checkWinner == 1)
-                score += -100000;
-            else if (checkWinner == 2)
-                score += 100000;
-            else
-            {
-                int piece;
-                if (_Active_Turn == "COMPUTER")
-                {
-                    piece = 2;
-                    score += CheckHorizontalOf2Lines(board, piece);
-                    score += CheckHorizontalOf3Lines(board, piece);
-                    score += CheckHorizontalOf4Lines(board, piece);
-                    score += CheckVerticalOf2Lines(board, piece);
-                    score += CheckVerticalOf3Lines(board, piece);
-                    score += CheckVerticalOf4Lines(board, piece);
-                }
-                else
-                {
-                    piece = 1;
-                    score -= CheckHorizontalOf2Lines(board, piece);
-                    score -= CheckHorizontalOf3Lines(board, piece);
-                    score -= CheckHorizontalOf4Lines(board, piece);
-                    score -= CheckVerticalOf2Lines(board, piece);
-                    score -= CheckVerticalOf3Lines(board, piece);
-                    score -= CheckVerticalOf4Lines(board, piece);
-                }
-            }
-            return score;
-        }
-
-        private int CheckHorizontalOf2Lines(int[] board, int piece)
-        {
-            int count = 0;
-            for (int i = 0; i < BOARDSIZE - 2; i++)
-                if (board[i] == piece && board[i + 1] == piece)
-                    count += 4;
-            return count;
-        }
-
-        private int CheckHorizontalOf3Lines(int[] board, int piece)
-        {
-            int count = 0;
-            for (int i = 0; i < BOARDSIZE - 3; i++)
-                if (board[i] == piece && board[i + 1] == piece && board[i + 2] == piece)
-                    count += 6;
-            return count;
-        }
-
-        private int CheckHorizontalOf4Lines(int[] board, int piece)
-        {
-            int count = 0;
-            for (int i = 0; i < BOARDSIZE - 4; i++)
-                if (board[i] == piece && board[i + 1] == piece && board[i + 2] == piece && board[i + 3] == piece)
-                    count += 8;
-            return count;
-        }
-
-        private int CheckVerticalOf2Lines(int[] board, int piece)
-        {
-            int count = 0;
-            for (int i = 0; i < BOARDSIZE - 6; i++)
-                if (board[i] == piece && board[i + 6] == piece)
-                    count += 4;
-            return count;
-        }
-
-        private int CheckVerticalOf3Lines(int[] board, int piece)
-        {
-            int count = 0;
-            for (int i = 0; i < BOARDSIZE - 12; i++)
-                if (board[i] == piece && board[i + 6] == piece && board[i + 12] == piece)
-                    count += 6;
-            return count;
-        }
-
-        private int CheckVerticalOf4Lines(int[] board, int piece)
-        {
-            int count = 0;
-            for (int i = 0; i < BOARDSIZE - 18; i++)
-                if (board[i] == piece && board[i + 6] == piece && board[i + 12] == piece && board[i + 18] == piece)
-                    count += 8;
-            return count;
-        }
-
-        public string Name
-        {
-            get { return this._Name; }
-        }
-
-        public Brush Fill
-        {
-            get { return this._Fill; }
-        }
-
-        public int GetMoveChoice()
-        {
-            return this._Choice;
-        }
-
-        public bool GetRotationDirection()
-        {
-            return this._IsClockWise;
-        }
-
-        public short GetCuadrant()
-        {
-            return this._Quad;
-        }
-
 
         public int CheckForWin(int[] board)
         {
@@ -742,5 +712,6 @@ namespace Pentago.AI
                 return playerAtPiece1;
             return 0;
         }
+        #endregion
     }
 }
