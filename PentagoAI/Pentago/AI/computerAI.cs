@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -32,15 +33,15 @@ namespace Pentago.AI
         private string _Active_Turn = "COMPUTER";
         private int[] _TempBoard = new int[BOARDSIZE];
 
-        public computerAI(string name, bool isActive, Brush fill, Difficulty treeDepth)
+        public computerAI(string name, bool isActive, Brush fill, Difficulty difficulty)
         {
             this._Name = name;
             this._ActivePlayer = isActive;
             this._Fill = fill;
-            if (treeDepth == Difficulty.Easy)
+            if (difficulty == Difficulty.Easy)
                 this._MaxTreeDepth = 1;
             else
-                this._MaxTreeDepth = 3;
+                this._MaxTreeDepth = 4;
         }
 
         public bool ActivePlayer
@@ -62,12 +63,11 @@ namespace Pentago.AI
             Console.WriteLine("Time taken: " + sw.Elapsed.TotalSeconds + " seconds.");
             //Console.WriteLine("_Choice: " + _Choice);
             //Console.WriteLine("_IsClockWise: " + _IsClockWise);
-           // Console.WriteLine("_Quad: " + _Quad);
+            // Console.WriteLine("_Quad: " + _Quad);
         }
 
         private double alphaBeta(int[] board, int treeDepth, double alpha, double beta)
         {
-            //if statement should check if there is a winner also
             if (treeDepth == this._MaxTreeDepth || CheckForWin(board) != 0)
                 return GameScore(board, treeDepth);
 
@@ -76,15 +76,15 @@ namespace Pentago.AI
             int move;
             double result;
             int[] possible_game;
-            int maxNumerOfAvailableMoves = availableMoves.Count;
+            int maxNumberOfAvailableMoves = availableMoves.Count;
             //if it is computer
             if (_Active_Turn == "COMPUTER")
             {
-                for (int i = 0; i < maxNumerOfAvailableMoves; i++)
+                for (int i = 0; i < maxNumberOfAvailableMoves; ++i)
                 {
-                    for (int quadrant = 1; quadrant < 5; quadrant++)
+                    for (int quadrant = 1; quadrant < 5; ++quadrant)
                     {
-                        for (int rotationDirection = 0; rotationDirection < 2; rotationDirection++)
+                        for (int rotationDirection = 0; rotationDirection < 2; ++rotationDirection)
                         {
                             move = availableMoves.ElementAt(i);
                             possible_game = PlacePiece(move, board);
@@ -105,9 +105,7 @@ namespace Pentago.AI
                                 }
                             }
                             else if (alpha >= beta)
-                            {
                                 return alpha;
-                            }
                         }
                     }
                 }
@@ -115,11 +113,11 @@ namespace Pentago.AI
             }
             else
             {
-                for (int i = 0; i < maxNumerOfAvailableMoves; i++)
+                for (int i = 0; i < maxNumberOfAvailableMoves; ++i)
                 {
-                    for (int quadrant = 1; quadrant < 5; quadrant++)
+                    for (int quadrant = 1; quadrant < 5; ++quadrant)
                     {
-                        for (int rotationDirection = 0; rotationDirection < 2; rotationDirection++)
+                        for (int rotationDirection = 0; rotationDirection < 2; ++rotationDirection)
                         {
                             move = availableMoves.ElementAt(i);
                             possible_game = PlacePiece(move, board);
@@ -129,7 +127,7 @@ namespace Pentago.AI
                             if (result < beta)
                             {
                                 beta = result;
-                                if (treeDepth == 1) 
+                                if (treeDepth == 1)
                                 {
                                     this._Choice = move;
                                     if (rotationDirection == 0)
@@ -140,9 +138,7 @@ namespace Pentago.AI
                                 }
                             }
                             else if (beta <= alpha)
-                            {
                                 return beta;
-                            }
                         }
                     }
                 }
@@ -264,9 +260,15 @@ namespace Pentago.AI
             int checkWinner = CheckForWin(board);
             //tie score?
             if (checkWinner == 1)
+            {
                 newScore += -9999;
+                newScore = newScore - treeDepth;
+            }
             else if (checkWinner == 2)
+            {
                 newScore += 9999;
+                newScore = newScore - treeDepth;
+            }
             else
             {
                 if (_Active_Turn == "COMPUTER")
@@ -286,7 +288,7 @@ namespace Pentago.AI
         private int CheckForPiecesLines(int[] board, int piece)
         {
             int count = 0;
-            for (int i = 0; i < BOARDSIZE; i++)
+            for (int i = 0; i < BOARDSIZE - 2; ++i)
             {
                 //Horizontal pieces
                 if (i < BOARDSIZE - 2)
@@ -295,10 +297,10 @@ namespace Pentago.AI
                         count += 4;
                     if (i < BOARDSIZE - 3)
                         if (board[i] == piece && board[i + 1] == piece && board[i + 2] == piece)
-                            count += 6;
+                            count += 8;
                     if (i < BOARDSIZE - 4)
                         if (board[i] == piece && board[i + 1] == piece && board[i + 2] == piece && board[i + 3] == piece)
-                            count += 8;
+                            count += 16;
                 }
                 //Vertical pieces
                 if (i < BOARDSIZE - 6)
@@ -307,10 +309,21 @@ namespace Pentago.AI
                         count += 4;
                     if (i < BOARDSIZE - 12)
                         if (board[i] == piece && board[i + 6] == piece && board[i + 12] == piece)
-                            count += 6;
+                            count += 8;
                     if (i < BOARDSIZE - 18)
                         if (board[i] == piece && board[i + 6] == piece && board[i + 12] == piece && board[i + 18] == piece)
+                            count += 16;
+                }
+
+                //Check progressively diagonal lines
+                if (i == 25)
+                {
+                    if (board[25] == piece && board[20] == piece)
+                        count += 4;
+                    if (board[25] == piece && board[20] == piece && board[15] == piece)
                             count += 8;
+                    if (board[25] == piece && board[20] == piece && board[15] == piece && board[10] == piece)
+                            count += 16;
                 }
             }
             return count;

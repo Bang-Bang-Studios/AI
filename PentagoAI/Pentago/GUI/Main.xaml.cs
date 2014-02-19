@@ -38,7 +38,7 @@ namespace Pentago
 
             GameOptions gameOptions = new GameOptions(GameOptions.TypeOfGame.QuickMatch, player1Name, player1Color, player2Name, player2Color);
             Window gameWindow = new Game(gameOptions);
-            this.Hide();
+            App.Current.MainWindow = gameWindow;
             gameWindow.Show();
         }
 
@@ -49,15 +49,20 @@ namespace Pentago
             //and passed to the gameOptions constructor
             string player1Name = "Diego Castillo";
             Brush player1Color = Brushes.Red;
-            computerAI.Difficulty  difficulty = computerAI.Difficulty.Easy;
+            computerAI.Difficulty  difficulty = computerAI.Difficulty.Hard;
 
             GameOptions gameOptions = new GameOptions(GameOptions.TypeOfGame.AI, player1Name, player1Color, difficulty);
             Window gameWindow = new Game(gameOptions);
-            this.Hide();
+            App.Current.MainWindow = gameWindow;
             gameWindow.Show();
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+
+        private void btnClose_Click(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();
         }

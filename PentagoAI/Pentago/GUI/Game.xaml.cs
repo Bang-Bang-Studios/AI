@@ -305,7 +305,15 @@ namespace Pentago
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Window main = new MainWindow();
-            this.Hide();
+            App.Current.MainWindow = main;
+            main.Show();
+            
+        }
+
+        private void btnClose_Click(object sender, RoutedEventArgs e)
+        {
+            Window main = new MainWindow();
+            App.Current.MainWindow = main;
             main.Show();
         }
     }
