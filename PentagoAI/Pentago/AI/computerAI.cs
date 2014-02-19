@@ -315,7 +315,8 @@ namespace Pentago.AI
                 }
             }
             return count;
-        }
+        }
+
         public string Name
         {
             get { return this._Name; }
