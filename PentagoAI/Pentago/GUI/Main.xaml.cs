@@ -11,6 +11,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Pentago.GUI;
+using Pentago.AI;
 
 namespace Pentago
 {
@@ -26,8 +28,38 @@ namespace Pentago
 
         private void btnQuickMatch_Click(object sender, RoutedEventArgs e)
         {
-            var gameWindow = new Game();
+            //Human vs Human
+            //Idieally all this options will be set from GUI and then extracted
+            //and passed to the gameOptions constructor
+            string player1Name = "Diego Castillo";
+            Brush player1Color = Brushes.Red;
+            string player2Name = "Antonio Banderas";
+            Brush player2Color = Brushes.Blue;
+
+            GameOptions gameOptions = new GameOptions(GameOptions.TypeOfGame.QuickMatch, player1Name, player1Color, player2Name, player2Color);
+            Window gameWindow = new Game(gameOptions);
+            this.Hide();
             gameWindow.Show();
+        }
+
+        private void btnQuickMatchAI_Click(object sender, RoutedEventArgs e)
+        {
+            //Human vs AI
+            //Idieally all this options will be set from GUI and then extracted
+            //and passed to the gameOptions constructor
+            string player1Name = "Diego Castillo";
+            Brush player1Color = Brushes.Red;
+            computerAI.Difficulty  difficulty = computerAI.Difficulty.Easy;
+
+            GameOptions gameOptions = new GameOptions(GameOptions.TypeOfGame.AI, player1Name, player1Color, difficulty);
+            Window gameWindow = new Game(gameOptions);
+            this.Hide();
+            gameWindow.Show();
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Application.Current.Shutdown();
         }
     }
 }

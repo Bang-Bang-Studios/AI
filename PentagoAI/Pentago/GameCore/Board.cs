@@ -6,7 +6,7 @@ using System.Windows.Media;
 
 namespace Pentago.GameCore
 {
-    class Board
+    public class Board
     {
         private const int BOARDSIZE = 36;
         private const int BOARWIDTH = 6;
@@ -44,14 +44,6 @@ namespace Pentago.GameCore
                     count++;
             }
             return count;
-        }
-
-        public void ClearBoard()
-        {
-            for (int i = 0; i < BOARDSIZE; i++)
-            {
-                this._board[i] = 0;
-            }
         }
 
         public void UpdateBoard(short row, short col, int player)

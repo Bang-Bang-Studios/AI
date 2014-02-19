@@ -8,7 +8,7 @@ using Pentago.AI;
 
 namespace Pentago.GameCore
 {
-    class GameBrain
+    public class GameBrain
     {
         private Board board = null;
 
@@ -18,10 +18,9 @@ namespace Pentago.GameCore
         private const int MAXMOVES = 36;
 
         //Initializes a human vs human game
-        public GameBrain(Player player1, Player player2)
+        public GameBrain(Player player1)
         {
             this.player1 = player1;
-            //this.player2 = player2;
             InitializeBoard();
         }
 
@@ -135,8 +134,7 @@ namespace Pentago.GameCore
                 default:
                     break;
             }
-            //if (isPlayer1Turn())
-                ChangeTurn();
+            ChangeTurn();
         }
 
         private bool ValidateMove(short row, short col)
@@ -154,31 +152,14 @@ namespace Pentago.GameCore
         private void ChangeTurn()
         {
             if (player1.ActivePlayer)
-            {
                 player1.ActivePlayer = false;
-                player2.ActivePlayer = true;
-            }
             else
-            {
                 player1.ActivePlayer = true;
-                player2.ActivePlayer = false;
-            }
         }
 
         public int[] GetBoard
         {
             get { return board.GetBoard; }
-        }
-
-        public void ResetGame()
-        {
-            board.ClearBoard();
-        }
-
-        public void ResetPlayers(Player player1, computerAI player2)
-        {
-            this.player1 = player1;
-            this.player2 = player2;
         }
 
         public int CheckForWin()
@@ -257,25 +238,15 @@ namespace Pentago.GameCore
 
 
                 if (res && numMoves < MAXMOVES)
-                {
                     return 0; // The game continues
-                }
                 if (tie || (p1w && p2w))
-                {
                     return 3;
-                }
                 if (p1w)
-                {
                     return 1;
-                }
                 if (p2w)
-                {
                     return 2;
-                }
                 if (numMoves == MAXMOVES)
-                {
                     return 3;
-                }
             }
             return 0;
         }
@@ -316,21 +287,13 @@ namespace Pentago.GameCore
             }
 
             if (res)
-            {
                 return 0;
-            }
             if (p1w && p2w)
-            {
                 return 3;
-            }
             if (p1w)
-            {
                 return 1;
-            }
             if (p2w)
-            {
                 return 2;
-            }
             return returnValue;
         }
 
@@ -371,21 +334,13 @@ namespace Pentago.GameCore
             }
 
             if (res)
-            {
                 return 0;
-            }
             if (p1w && p2w)
-            {
                 return 3;
-            }
             if (p1w)
-            {
                 return 1;
-            }
             if (p2w)
-            {
                 return 2;
-            }
             return returnValue;
         }
 
@@ -425,21 +380,13 @@ namespace Pentago.GameCore
             }
 
             if (res)
-            {
                 return 0;
-            }
             if (p1w && p2w)
-            {
                 return 3;
-            }
             if (p1w)
-            {
                 return 1;
-            }
             if (p2w)
-            {
                 return 2;
-            }
             return returnValue;
 
         }

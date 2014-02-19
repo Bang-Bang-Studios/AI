@@ -6,7 +6,7 @@ using System.Windows.Media;
 
 namespace Pentago.GameCore
 {
-    class Player
+    public class Player
     {
         private string _Name;
         private bool _ActivePlayer;

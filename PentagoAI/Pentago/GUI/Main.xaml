@@ -1,8 +1,9 @@
 ﻿<Window x:Class="Pentago.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Main" Height="319" Width="508" ResizeMode="NoResize" WindowStyle="SingleBorderWindow" WindowStartupLocation="CenterScreen">
+        Title="Main" Height="319" Width="508" ResizeMode="NoResize" WindowStyle="SingleBorderWindow" WindowStartupLocation="CenterScreen" Closing="Window_Closing">
     <Grid Background="#FF767474">
-        <Button Content="Quick Match" Height="34" HorizontalAlignment="Left" Margin="195,128,0,0" Name="btnQuickMatch" VerticalAlignment="Top" Width="100" Click="btnQuickMatch_Click" />
+        <Button Content="Human vs Human" Height="39" HorizontalAlignment="Left" Margin="182,64,0,0" Name="btnQuickMatch" VerticalAlignment="Top" Width="116" Click="btnQuickMatch_Click" />
+        <Button Content="Human vs AI" Height="37" HorizontalAlignment="Left" Margin="182,141,0,0" Name="btnQuickMatchAI" VerticalAlignment="Top" Width="116" Click="btnQuickMatchAI_Click" />
     </Grid>
 </Window>

@@ -10,14 +10,14 @@ using System.Threading;
 
 namespace Pentago.AI
 {
-    class computerAI
+    public class computerAI
     {
         //AI player
         private string _Name;
         private bool _ActivePlayer;
         private Brush _Fill;
-        private enum Difficulty { Easy, Hard };
-        private Difficulty _DifficultyLevel;
+        public enum Difficulty { Easy, Hard };
+        public Difficulty _DifficultyLevel;
         private int _MaxTreeDepth;
 
         //board constants
@@ -32,16 +32,15 @@ namespace Pentago.AI
         private string _Active_Turn = "COMPUTER";
         private int[] _TempBoard = new int[BOARDSIZE];
 
-        public computerAI (string name, bool isActive, Brush fill, int treeDepth)
+        public computerAI(string name, bool isActive, Brush fill, Difficulty treeDepth)
         {
             this._Name = name;
             this._ActivePlayer = isActive;
             this._Fill = fill;
-            this._MaxTreeDepth = treeDepth;
-            if (treeDepth == 1)
-                this._DifficultyLevel = Difficulty.Easy;
+            if (treeDepth == Difficulty.Easy)
+                this._MaxTreeDepth = 1;
             else
-                this._DifficultyLevel = Difficulty.Hard;
+                this._MaxTreeDepth = 3;
         }
 
         public bool ActivePlayer
