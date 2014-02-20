@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +7,7 @@ using System.Windows;
 using Pentago.GameCore;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Pentago.AI
 {
@@ -68,6 +68,7 @@ namespace Pentago.AI
 
         private double alphaBeta(int[] board, int treeDepth, double alpha, double beta)
         {
+            //if statement should check if there is a winner also
             if (treeDepth == this._MaxTreeDepth || CheckForWin(board) != 0)
                 return GameScore(board, treeDepth);
 
@@ -76,15 +77,15 @@ namespace Pentago.AI
             int move;
             double result;
             int[] possible_game;
-            int maxNumberOfAvailableMoves = availableMoves.Count;
+            int maxNumerOfAvailableMoves = availableMoves.Count;
             //if it is computer
             if (_Active_Turn == "COMPUTER")
             {
-                for (int i = 0; i < maxNumberOfAvailableMoves; ++i)
+                for (int i = 0; i < maxNumerOfAvailableMoves; i++)
                 {
-                    for (int quadrant = 1; quadrant < 5; ++quadrant)
+                    for (int quadrant = 1; quadrant < 5; quadrant++)
                     {
-                        for (int rotationDirection = 0; rotationDirection < 2; ++rotationDirection)
+                        for (int rotationDirection = 0; rotationDirection < 2; rotationDirection++)
                         {
                             move = availableMoves.ElementAt(i);
                             possible_game = PlacePiece(move, board);
@@ -105,7 +106,9 @@ namespace Pentago.AI
                                 }
                             }
                             else if (alpha >= beta)
+                            {
                                 return alpha;
+                            }
                         }
                     }
                 }
@@ -113,11 +116,11 @@ namespace Pentago.AI
             }
             else
             {
-                for (int i = 0; i < maxNumberOfAvailableMoves; ++i)
+                for (int i = 0; i < maxNumerOfAvailableMoves; i++)
                 {
-                    for (int quadrant = 1; quadrant < 5; ++quadrant)
+                    for (int quadrant = 1; quadrant < 5; quadrant++)
                     {
-                        for (int rotationDirection = 0; rotationDirection < 2; ++rotationDirection)
+                        for (int rotationDirection = 0; rotationDirection < 2; rotationDirection++)
                         {
                             move = availableMoves.ElementAt(i);
                             possible_game = PlacePiece(move, board);
@@ -138,7 +141,9 @@ namespace Pentago.AI
                                 }
                             }
                             else if (beta <= alpha)
+                            {
                                 return beta;
+                            }
                         }
                     }
                 }
@@ -260,15 +265,9 @@ namespace Pentago.AI
             int checkWinner = CheckForWin(board);
             //tie score?
             if (checkWinner == 1)
-            {
                 newScore += -9999;
-                newScore = newScore - treeDepth;
-            }
             else if (checkWinner == 2)
-            {
                 newScore += 9999;
-                newScore = newScore - treeDepth;
-            }
             else
             {
                 if (_Active_Turn == "COMPUTER")
@@ -294,19 +293,19 @@ namespace Pentago.AI
                 if (i < BOARDSIZE - 2)
                 {
                     if (board[i] == piece && board[i + 1] == piece)
-                        count += 4;
+                        count += 2;
                     if (i < BOARDSIZE - 3)
                         if (board[i] == piece && board[i + 1] == piece && board[i + 2] == piece)
-                            count += 8;
+                            count += 4;
                     if (i < BOARDSIZE - 4)
                         if (board[i] == piece && board[i + 1] == piece && board[i + 2] == piece && board[i + 3] == piece)
-                            count += 16;
+                            count += 8;
                 }
                 //Vertical pieces
                 if (i < BOARDSIZE - 6)
                 {
                     if (board[i] == piece && board[i + 6] == piece)
-                        count += 4;
+                        count += 2;
                     if (i < BOARDSIZE - 12)
                         if (board[i] == piece && board[i + 6] == piece && board[i + 12] == piece)
                             count += 8;
@@ -315,16 +314,156 @@ namespace Pentago.AI
                             count += 16;
                 }
 
-                //Check progressively diagonal lines
+                if (i == 0)
+                    if (board[7] == piece || board[10] == piece || board[25] == piece || board[28] == piece)
+                        count += 100;
+
+                /******NE Diagonals********/
+                #region
+                if (i == 24)
+                {
+                    if (board[24] == piece && board[19] == piece)
+                        count += 2;
+                    if (board[24] == piece && board[19] == piece && board[14] == piece)
+                        count += 10;
+                    if (board[24] == piece && board[19] == piece && board[14] == piece && board[9] == piece)
+                        count += 20;
+                }
+
+                if (i == 19)
+                {
+                    if (board[19] == piece && board[14] == piece)
+                        count += 2;
+                    if (board[19] == piece && board[14] == piece && board[9] == piece)
+                        count += 10;
+                    if (board[19] == piece && board[14] == piece && board[9] == piece && board[4] == piece)
+                        count += 20;
+                }
+
+                if (i == 30)
+                {
+                    if (board[30] == piece && board[25] == piece)
+                        count += 2;
+                    if (board[30] == piece && board[25] == piece && board[20] == piece)
+                        count += 10;
+                    if (board[30] == piece && board[25] == piece && board[20] == piece && board[15] == piece)
+                        count += 20;
+                }
+
                 if (i == 25)
                 {
                     if (board[25] == piece && board[20] == piece)
-                        count += 4;
+                        count += 2;
                     if (board[25] == piece && board[20] == piece && board[15] == piece)
-                            count += 8;
+                        count += 10;
                     if (board[25] == piece && board[20] == piece && board[15] == piece && board[10] == piece)
-                            count += 16;
+                        count += 20;
                 }
+
+                if (i == 20)
+                {
+                    if (board[20] == piece && board[15] == piece)
+                        count += 2;
+                    if (board[20] == piece && board[15] == piece && board[10] == piece)
+                        count += 10;
+                    if (board[20] == piece && board[15] == piece && board[10] == piece && board[5] == piece)
+                        count += 20;
+                }
+
+                if (i == 31)
+                {
+                    if (board[31] == piece && board[26] == piece)
+                        count += 2;
+                    if (board[31] == piece && board[26] == piece && board[21] == piece)
+                        count += 10;
+                    if (board[31] == piece && board[26] == piece && board[21] == piece && board[16] == piece)
+                        count += 20;
+                }
+
+                if (i == 26)
+                {
+                    if (board[26] == piece && board[21] == piece)
+                        count += 2;
+                    if (board[26] == piece && board[21] == piece && board[16] == piece)
+                        count += 10;
+                    if (board[26] == piece && board[21] == piece && board[16] == piece && board[11] == piece)
+                        count += 20;
+                }
+                #endregion
+
+                /******SE Diagonals********/
+                #region
+                if (i == 1)
+                {
+                    if (board[1] == piece && board[8] == piece)
+                        count += 2;
+                    if (board[1] == piece && board[8] == piece && board[15] == piece)
+                        count += 10;
+                    if (board[1] == piece && board[8] == piece && board[15] == piece && board[22] == piece)
+                        count += 20;
+                }
+
+                if (i == 8)
+                {
+                    if (board[8] == piece && board[15] == piece)
+                        count += 2;
+                    if (board[8] == piece && board[15] == piece && board[22] == piece)
+                        count += 10;
+                    if (board[8] == piece && board[15] == piece && board[22] == piece && board[29] == piece)
+                        count += 20;
+                }
+
+                if (i == 0)
+                {
+                    if (board[0] == piece && board[7] == piece)
+                        count += 2;
+                    if (board[0] == piece && board[7] == piece && board[14] == piece)
+                        count += 10;
+                    if (board[0] == piece && board[7] == piece && board[14] == piece && board[21] == piece)
+                        count += 20;
+                }
+
+                if (i == 7)
+                {
+                    if (board[7] == piece && board[14] == piece)
+                        count += 2;
+                    if (board[7] == piece && board[14] == piece && board[21] == piece)
+                        count += 10;
+                    if (board[7] == piece && board[14] == piece && board[21] == piece && board[28] == piece)
+                        count += 20;
+                }
+
+                if (i == 14)
+                {
+                    if (board[14] == piece && board[21] == piece)
+                        count += 2;
+                    if (board[14] == piece && board[21] == piece && board[28] == piece)
+                        count += 10;
+                    if (board[14] == piece && board[21] == piece && board[28] == piece && board[35] == piece)
+                        count += 20;
+                }
+
+                if (i == 6)
+                {
+                    if (board[6] == piece && board[13] == piece)
+                        count += 2;
+                    if (board[6] == piece && board[13] == piece && board[20] == piece)
+                        count += 10;
+                    if (board[6] == piece && board[13] == piece && board[20] == piece && board[27] == piece)
+                        count += 20;
+                }
+
+                if (i == 13)
+                {
+                    if (board[13] == piece && board[20] == piece)
+                        count += 2;
+                    if (board[13] == piece && board[20] == piece && board[27] == piece)
+                        count += 10;
+                    if (board[13] == piece && board[20] == piece && board[27] == piece && board[34] == piece)
+                        count += 20;
+                }
+
+                #endregion
             }
             return count;
         }

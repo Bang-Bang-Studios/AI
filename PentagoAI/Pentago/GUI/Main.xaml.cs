@@ -54,6 +54,7 @@ namespace Pentago
             GameOptions gameOptions = new GameOptions(GameOptions.TypeOfGame.AI, player1Name, player1Color, difficulty);
             Window gameWindow = new Game(gameOptions);
             App.Current.MainWindow = gameWindow;
+            this.Hide();
             gameWindow.Show();
         }
 

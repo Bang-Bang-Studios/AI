@@ -306,6 +306,7 @@ namespace Pentago
         {
             Window main = new MainWindow();
             App.Current.MainWindow = main;
+            this.Hide();
             main.Show();
             
         }
@@ -314,6 +315,7 @@ namespace Pentago
         {
             Window main = new MainWindow();
             App.Current.MainWindow = main;
+            this.Hide();
             main.Show();
         }
     }
