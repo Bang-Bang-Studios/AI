@@ -55,6 +55,8 @@ namespace Pentago
                     player1 = new Player(gameOptions._Player1Name, true, gameOptions._Player1Color);
                     computerPlayer = new computerAI("I'm your boss", false, Brushes.Green, gameOptions._Difficulty);
                     gameBrain = new GameBrain(player1, computerPlayer);
+                    if (!player1.ActivePlayer)
+                        GetComputerMove();
                     break;
                 default:
                     break;
