@@ -17,6 +17,7 @@ using Pentago.GUI;
 
 //just for visual help
 using System.Threading;
+using System.ComponentModel;
 
 namespace Pentago
 {
@@ -56,7 +57,7 @@ namespace Pentago
                     computerPlayer = new computerAI("I'm your boss", false, Brushes.Green, gameOptions._Difficulty);
                     gameBrain = new GameBrain(player1, computerPlayer);
                     if (!player1.ActivePlayer)
-                        GetComputerMove();
+                        GetComputerMoveAsynchronously();
                     break;
                 default:
                     break;
@@ -216,33 +217,51 @@ namespace Pentago
             if (gameOptions._TypeOfGame == GameOptions.TypeOfGame.AI)
             {
                 if (!player1.ActivePlayer && winner == 0)
-                    GetComputerMove();
+                    GetComputerMoveAsynchronously();
             }
         }
 
-        private void GetComputerMove()
+        private void GetComputerMoveAsynchronously()
         {
-            int winner = gameBrain.CheckForWin();
-            if (userMadeRotation && gameBrain.MakeComputerMove() && winner == 0)
+            var bw = new BackgroundWorker();
+            // define the event handlers
+            bw.DoWork += (sender, args) =>
             {
-                userMadeRotation = false;
-                //Update GUI player
-                int computerMove = gameBrain.GetComputerMove();
-                Rectangle rec = (Rectangle)Board.Children[computerMove];
-                rec.Fill = computerPlayer.Fill;
+                int winner = gameBrain.CheckForWin();
+                if (!gameBrain.MakeComputerMove() || winner != 0)
+                {
+                    bw.CancelAsync();
+                    if (winner != 0)
+                        ShowWinner(winner);
+                }
+            };
+            bw.RunWorkerCompleted += (sender, args) =>
+            {
+                if (args.Error != null)  // if an exception occurred during DoWork,
+                    MessageBox.Show(args.Error.ToString());  // do your error handling here
 
-                winner = gameBrain.CheckForWin();
-                if (winner != 0)
-                    ShowWinner(winner);
-                else
-                    GetComputerRotation();
-            }
-            else if (winner != 0)
-                ShowWinner(winner);
+                int winner = gameBrain.CheckForWin();
+                if (winner == 0)
+                {
+                    //Update GUI player
+                    int computerMove = gameBrain.GetComputerMove();
+                    Rectangle rec = (Rectangle)Board.Children[computerMove];
+                    rec.Fill = computerPlayer.Fill;
+                    winner = gameBrain.CheckForWin();
+                    if (winner != 0)
+                        ShowWinner(winner);
+                    else
+                        GetComputerRotation();
+                }
+
+            };
+            bw.RunWorkerAsync();
         }
 
         private void GetComputerRotation()
         {
+            /*****************************SIMULATE ANIMATION*****************************/
+            Thread.Sleep(1000);
             gameBrain.MakeComputerRotation();
             MakeRotationsHidden();
             RePaintBoard();

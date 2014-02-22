@@ -4,7 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Windows.Media;
 using System.Windows;
+using System.Threading;
+using System.Threading.Tasks;
 using Pentago.AI;
+using System.ComponentModel;
 
 namespace Pentago.GameCore
 {
