@@ -42,7 +42,7 @@ namespace Pentago.AI
             if (difficulty == Difficulty.Easy)
                 this._MaxTreeDepth = 1;
             else
-                this._MaxTreeDepth = 4;
+                this._MaxTreeDepth = 3;
         }
 
         public bool ActivePlayer
@@ -58,7 +58,7 @@ namespace Pentago.AI
 
             Hashtable hashTable = new Hashtable();
             Stopwatch sw = Stopwatch.StartNew();
-            alphaBeta(this._TempBoard, 0, double.NegativeInfinity, double.PositiveInfinity, hashTable, sw);
+            alphaBeta(this._TempBoard, 0, double.NegativeInfinity, double.PositiveInfinity, hashTable);
             sw.Stop();
             Console.WriteLine("Time taken: " + sw.Elapsed.TotalSeconds + " seconds.");
             //Console.WriteLine("_Choice: " + _Choice);
@@ -66,9 +66,9 @@ namespace Pentago.AI
             //Console.WriteLine("_Quad: " + _Quad);
         }
 
-        private double alphaBeta(int[] board, int treeDepth, double alpha, double beta, Hashtable hashTable, Stopwatch sw)
+        private double alphaBeta(int[] board, int treeDepth, double alpha, double beta, Hashtable hashTable)
         {
-            if (treeDepth == this._MaxTreeDepth || CheckForWin(board) != 0 || sw.Elapsed.TotalMilliseconds > 5500)
+            if (treeDepth == this._MaxTreeDepth || CheckForWin(board) != 0)
                 return GameScore(board, treeDepth);
 
             treeDepth++;
@@ -87,7 +87,6 @@ namespace Pentago.AI
             }
             else
             {
-                //if it is computer
                 if (_Active_Turn == "COMPUTER")
                 {
                     for (int i = 0; i < maxNumerOfAvailableMoves; ++i)
@@ -101,7 +100,7 @@ namespace Pentago.AI
                                 possible_game = MakeRotation(quadrant, rotationDirection, possible_game);
 
                                 possible_game_string = ConvertIntArrayToString(possible_game);
-                                result = alphaBeta(possible_game, treeDepth, alpha, beta, hashTable, sw);
+                                result = alphaBeta(possible_game, treeDepth, alpha, beta, hashTable);
                                 hashTable[possible_game_string] = result;
 
                                 board = UndoMove(board, move, quadrant, rotationDirection);
@@ -138,7 +137,7 @@ namespace Pentago.AI
                                 possible_game = MakeRotation(quadrant, rotationDirection, possible_game);
 
                                 possible_game_string = ConvertIntArrayToString(possible_game);
-                                result = alphaBeta(possible_game, treeDepth, alpha, beta, hashTable, sw);
+                                result = alphaBeta(possible_game, treeDepth, alpha, beta, hashTable);
                                 hashTable[possible_game_string] = result;
 
                                 board = UndoMove(board, move, quadrant, rotationDirection);
@@ -256,7 +255,6 @@ namespace Pentago.AI
                 piece = 2;
             else
                 piece = 1;
-
             board[move] = piece;
             return board;
         }
