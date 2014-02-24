@@ -109,20 +109,20 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <EmbeddedResource Include="GUI\Images\CounterClockWise3.jpg" />
+    <Resource Include="GUI\images\CounterClockWise3.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="GUI\Images\ClockWise1.jpg" />
-    <EmbeddedResource Include="GUI\Images\ClockWise2.jpg" />
-    <EmbeddedResource Include="GUI\Images\ClockWise3.jpg" />
-    <EmbeddedResource Include="GUI\Images\CounterClockWise1.jpg" />
-    <EmbeddedResource Include="GUI\Images\CounterClockWise2.jpg" />
+    <Resource Include="GUI\images\ClockWise1.jpg" />
+    <Resource Include="GUI\images\ClockWise2.jpg" />
+    <Resource Include="GUI\images\ClockWise3.jpg" />
+    <Resource Include="GUI\images\CounterClockWise1.jpg" />
+    <Resource Include="GUI\images\CounterClockWise2.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="GUI\Images\ClockWise4.jpg" />
+    <Resource Include="GUI\images\ClockWise4.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="GUI\Images\CounterClockWise4.jpg" />
+    <Resource Include="GUI\images\CounterClockWise4.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
