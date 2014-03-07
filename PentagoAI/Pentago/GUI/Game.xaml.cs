@@ -86,9 +86,13 @@ namespace Pentago
 
                 Point mousePosition = e.GetPosition(Board);
                 short row = (short)(mousePosition.Y / rectSize);
+                if (row == 6)
+                    row--;
                 short col = (short)(mousePosition.X / rectSize);
+                if (col == 6)
+                    col--;
                 int winner = gameBrain.CheckForWin();
-                if (userMadeRotation && gameBrain.PlacePiece(row, col) && winner == 0)
+                if (userMadeRotation && winner == 0 && gameBrain.PlacePiece(row, col))
                 {
                     userMadeRotation = false;
 
@@ -228,31 +232,24 @@ namespace Pentago
             bw.DoWork += (sender, args) =>
             {
                 int winner = gameBrain.CheckForWin();
-                if (!gameBrain.MakeComputerMove() || winner != 0)
-                {
+                if (!gameBrain.MakeComputerMove())
                     bw.CancelAsync();
-                    if (winner != 0)
-                        ShowWinner(winner);
-                }
             };
             bw.RunWorkerCompleted += (sender, args) =>
             {
                 if (args.Error != null)  // if an exception occurred during DoWork,
                     MessageBox.Show(args.Error.ToString());  // do your error handling here
 
-                int winner = gameBrain.CheckForWin();
-                if (winner == 0)
-                {
+
                     //Update GUI player
                     int computerMove = gameBrain.GetComputerMove();
                     Rectangle rec = (Rectangle)Board.Children[computerMove];
                     rec.Fill = computerPlayer.Fill;
-                    winner = gameBrain.CheckForWin();
+                    int winner = gameBrain.CheckForWin();
                     if (winner != 0)
                         ShowWinner(winner);
                     else
                         GetComputerRotation();
-                }
 
             };
             bw.RunWorkerAsync();

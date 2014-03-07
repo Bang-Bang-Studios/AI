@@ -72,21 +72,17 @@ namespace Pentago.AI
                 return GameScore(board, treeDepth);
 
             treeDepth++;
-            List<int> availableMoves = GetAvailableMoves(board);
-            int move;
-            double result;
-            int[] possible_game;
-            int maxNumerOfAvailableMoves = availableMoves.Count;
-
             string possible_game_string;
             possible_game_string = ConvertIntArrayToString(board);
             if (hashTable[possible_game_string] != null)
-            {
-                result = (double)hashTable[possible_game_string];
-                return result;
-            }
+               return (double)hashTable[possible_game_string];
             else
             {
+                double result;
+                List<int> availableMoves = GetAvailableMoves(board);
+                int move;
+                int[] possible_game;
+                int maxNumerOfAvailableMoves = availableMoves.Count;
                 if (_Active_Turn == "COMPUTER")
                 {
                     for (int i = 0; i < maxNumerOfAvailableMoves; ++i)
@@ -276,8 +272,7 @@ namespace Pentago.AI
             return possibleMoves;
         }
 
-        //A line is how many pieces a user has side by side
-        //either horizontally or vertically
+
         private int GameScore(int[] board, int treeDepth)
         {
             int newScore = 0;
@@ -309,6 +304,50 @@ namespace Pentago.AI
             int count = 0;
             for (int i = 0; i < BOARDSIZE; ++i)
             {
+                //Horizontal pieces down
+                if (i % 6 == 0)
+                {
+                    if (board[i] == piece && (board[i + 1] == piece || board[i + 1] == 0))
+                        count += 1;
+
+                    if (board[i] == piece && board[i + 1] == piece && (board[i + 2] == piece || board[i + 2] == 0))
+                        count += 4;
+
+                    if (board[i] == piece && board[i + 1] == piece && board[i + 2] == piece && (board[i + 3] == piece || board[i + 3] == 0))
+                        count += 8;
+
+                    if (board[i] == piece && board[i + 1] == piece && board[i + 2] == piece && board[i + 3] == piece && (board[i + 4] == piece || board[i + 4] == 0))
+                        count += 20;
+                }
+
+                //Vertical pieces down
+                if (i >= 0 && i < 18)
+                {
+                    if (board[i] == piece && (board[i + 6] == piece || board[i + 6] == 0))
+                        count += 1;
+                    if (board[i] == piece && board[i + 6] == piece && (board[i + 12] == piece && board[i + 12] == 0))
+                        count += 6;
+                    if (board[i] == piece && board[i + 6] == piece && board[i + 12] == piece && (board[i + 18] == piece || board[i + 18] == 0))
+                        count += 9;
+                    if (i >= 12 && i < 18)
+                        if (board[i] == piece && board[i + 6] == piece && board[i + 12] == piece && (board[i + 18] == piece || board[i + 18] == 0))
+                            count += 15;
+                }
+
+                //Vertical pieces up
+                if (i <= 35 && i >= 18)
+                {
+                    if (board[i] == piece && (board[i - 6] == piece || board[i - 6] == 0))
+                        count += 1;
+                    if (board[i] == piece && board[i - 6] == piece && (board[i - 12] == piece && board[i - 12] == 0))
+                        count += 6;
+                    if (board[i] == piece && board[i - 6] == piece && board[i - 12] == piece && (board[i - 18] == piece || board[i - 18] == 0))
+                        count += 9;
+                    if (i >= 12 && i < 18)
+                        if (board[i] == piece && board[i - 6] == piece && board[i - 12] == piece && (board[i - 18] == piece || board[i - 18] == 0))
+                            count += 15;
+                }
+
                 //Horizontal pieces
                 if (i < BOARDSIZE - 3)
                 {
@@ -332,153 +371,6 @@ namespace Pentago.AI
                 if (i == 0)
                     if (board[7] == piece || board[10] == piece || board[25] == piece || board[28] == piece)
                         count += 100;
-
-                /******NE Diagonals********/
-                #region
-                if (i == 24)
-                {
-                    if (board[24] == piece && board[19] == piece)
-                        count += 2;
-                    if (board[24] == piece && board[19] == piece && board[14] == piece)
-                        count += 10;
-                    if (board[24] == piece && board[19] == piece && board[14] == piece && board[9] == piece)
-                        count += 20;
-                }
-
-                if (i == 19)
-                {
-                    if (board[19] == piece && board[14] == piece)
-                        count += 2;
-                    if (board[19] == piece && board[14] == piece && board[9] == piece)
-                        count += 10;
-                    if (board[19] == piece && board[14] == piece && board[9] == piece && board[4] == piece)
-                        count += 20;
-                }
-
-                if (i == 30)
-                {
-                    if (board[30] == piece && board[25] == piece)
-                        count += 2;
-                    if (board[30] == piece && board[25] == piece && board[20] == piece)
-                        count += 10;
-                    if (board[30] == piece && board[25] == piece && board[20] == piece && board[15] == piece)
-                        count += 20;
-                }
-
-                if (i == 25)
-                {
-                    if (board[25] == piece && board[20] == piece)
-                        count += 2;
-                    if (board[25] == piece && board[20] == piece && board[15] == piece)
-                        count += 10;
-                    if (board[25] == piece && board[20] == piece && board[15] == piece && board[10] == piece)
-                        count += 20;
-                }
-
-                if (i == 20)
-                {
-                    if (board[20] == piece && board[15] == piece)
-                        count += 2;
-                    if (board[20] == piece && board[15] == piece && board[10] == piece)
-                        count += 10;
-                    if (board[20] == piece && board[15] == piece && board[10] == piece && board[5] == piece)
-                        count += 20;
-                }
-
-                if (i == 31)
-                {
-                    if (board[31] == piece && board[26] == piece)
-                        count += 2;
-                    if (board[31] == piece && board[26] == piece && board[21] == piece)
-                        count += 10;
-                    if (board[31] == piece && board[26] == piece && board[21] == piece && board[16] == piece)
-                        count += 20;
-                }
-
-                if (i == 26)
-                {
-                    if (board[26] == piece && board[21] == piece)
-                        count += 2;
-                    if (board[26] == piece && board[21] == piece && board[16] == piece)
-                        count += 10;
-                    if (board[26] == piece && board[21] == piece && board[16] == piece && board[11] == piece)
-                        count += 20;
-                }
-                #endregion
-
-                /******SE Diagonals********/
-                #region
-                if (i == 1)
-                {
-                    if (board[1] == piece && board[8] == piece)
-                        count += 2;
-                    if (board[1] == piece && board[8] == piece && board[15] == piece)
-                        count += 10;
-                    if (board[1] == piece && board[8] == piece && board[15] == piece && board[22] == piece)
-                        count += 20;
-                }
-
-                if (i == 8)
-                {
-                    if (board[8] == piece && board[15] == piece)
-                        count += 2;
-                    if (board[8] == piece && board[15] == piece && board[22] == piece)
-                        count += 10;
-                    if (board[8] == piece && board[15] == piece && board[22] == piece && board[29] == piece)
-                        count += 20;
-                }
-
-                if (i == 0)
-                {
-                    if (board[0] == piece && board[7] == piece)
-                        count += 2;
-                    if (board[0] == piece && board[7] == piece && board[14] == piece)
-                        count += 10;
-                    if (board[0] == piece && board[7] == piece && board[14] == piece && board[21] == piece)
-                        count += 20;
-                }
-
-                if (i == 7)
-                {
-                    if (board[7] == piece && board[14] == piece)
-                        count += 2;
-                    if (board[7] == piece && board[14] == piece && board[21] == piece)
-                        count += 10;
-                    if (board[7] == piece && board[14] == piece && board[21] == piece && board[28] == piece)
-                        count += 20;
-                }
-
-                if (i == 14)
-                {
-                    if (board[14] == piece && board[21] == piece)
-                        count += 2;
-                    if (board[14] == piece && board[21] == piece && board[28] == piece)
-                        count += 10;
-                    if (board[14] == piece && board[21] == piece && board[28] == piece && board[35] == piece)
-                        count += 20;
-                }
-
-                if (i == 6)
-                {
-                    if (board[6] == piece && board[13] == piece)
-                        count += 2;
-                    if (board[6] == piece && board[13] == piece && board[20] == piece)
-                        count += 10;
-                    if (board[6] == piece && board[13] == piece && board[20] == piece && board[27] == piece)
-                        count += 20;
-                }
-
-                if (i == 13)
-                {
-                    if (board[13] == piece && board[20] == piece)
-                        count += 2;
-                    if (board[13] == piece && board[20] == piece && board[27] == piece)
-                        count += 10;
-                    if (board[13] == piece && board[20] == piece && board[27] == piece && board[34] == piece)
-                        count += 20;
-                }
-
-                #endregion
             }
             return count;
         }
