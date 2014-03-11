@@ -257,8 +257,6 @@ namespace Pentago
 
         private void GetComputerRotation()
         {
-            /*****************************SIMULATE ANIMATION*****************************/
-            Thread.Sleep(1000);
             gameBrain.MakeComputerRotation();
             MakeRotationsHidden();
             RePaintBoard();

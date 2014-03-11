@@ -40,9 +40,9 @@ namespace Pentago.AI
             this._ActivePlayer = isActive;
             this._Fill = fill;
             if (difficulty == Difficulty.Easy)
-                this._MaxTreeDepth = 1;
+                this._MaxTreeDepth = 4;
             else
-                this._MaxTreeDepth = 3;
+                this._MaxTreeDepth = 4;
         }
 
         public bool ActivePlayer
@@ -72,91 +72,95 @@ namespace Pentago.AI
                 return GameScore(board, treeDepth);
 
             treeDepth++;
+            double result;
+            List<int> availableMoves = GetAvailableMoves(board);
+            int move;
+            int[] possible_game;
             string possible_game_string;
-            possible_game_string = ConvertIntArrayToString(board);
-            if (hashTable[possible_game_string] != null)
-               return (double)hashTable[possible_game_string];
+            int maxNumberOfAvailableMoves = availableMoves.Count;
+            if (_Active_Turn == "COMPUTER")
+            {
+                for (int i = 0; i < maxNumberOfAvailableMoves; ++i)
+                {
+                    for (int quadrant = 1; quadrant < 5; ++quadrant)
+                    {
+                        for (int rotationDirection = 0; rotationDirection < 2; ++rotationDirection)
+                        {
+                            move = availableMoves.ElementAt(i);
+                            possible_game = PlacePiece(move, board);
+                            possible_game = MakeRotation(quadrant, rotationDirection, possible_game);
+
+                            possible_game_string = ConvertIntArrayToString(possible_game);
+                            if (hashTable[possible_game_string] != null)
+                                result = (double)hashTable[possible_game_string];
+                            else
+                            {
+                                result = alphaBeta(possible_game, treeDepth, alpha, beta, hashTable);
+                                hashTable[possible_game_string] = result;
+                            }
+
+                            board = UndoMove(board, move, quadrant, rotationDirection);
+                            if (result > alpha)
+                            {
+                                alpha = result;
+                                if (treeDepth == 1)
+                                {
+                                    this._Choice = move;
+                                    if (rotationDirection == 0)
+                                        this._IsClockWise = false;
+                                    else
+                                        this._IsClockWise = true;
+                                    this._Quad = (short)quadrant;
+                                }
+                            }
+                            else if (alpha >= beta)
+                                return alpha;
+                        }
+                    }
+                }
+                return alpha;
+            }
             else
             {
-                double result;
-                List<int> availableMoves = GetAvailableMoves(board);
-                int move;
-                int[] possible_game;
-                int maxNumerOfAvailableMoves = availableMoves.Count;
-                if (_Active_Turn == "COMPUTER")
+                for (int i = 0; i < maxNumberOfAvailableMoves; ++i)
                 {
-                    for (int i = 0; i < maxNumerOfAvailableMoves; ++i)
+                    for (int quadrant = 1; quadrant < 5; ++quadrant)
                     {
-                        for (int quadrant = 1; quadrant < 5; ++quadrant)
+                        for (int rotationDirection = 0; rotationDirection < 2; ++rotationDirection)
                         {
-                            for (int rotationDirection = 0; rotationDirection < 2; ++rotationDirection)
-                            {
-                                move = availableMoves.ElementAt(i);
-                                possible_game = PlacePiece(move, board);
-                                possible_game = MakeRotation(quadrant, rotationDirection, possible_game);
+                            move = availableMoves.ElementAt(i);
+                            possible_game = PlacePiece(move, board);
+                            possible_game = MakeRotation(quadrant, rotationDirection, possible_game);
 
-                                possible_game_string = ConvertIntArrayToString(possible_game);
+                            possible_game_string = ConvertIntArrayToString(possible_game);
+                            if (hashTable[possible_game_string] != null)
+                                result = (double)hashTable[possible_game_string];
+                            else
+                            {
                                 result = alphaBeta(possible_game, treeDepth, alpha, beta, hashTable);
                                 hashTable[possible_game_string] = result;
-
-                                board = UndoMove(board, move, quadrant, rotationDirection);
-                                if (result > alpha)
-                                {
-                                    alpha = result;
-                                    if (treeDepth == 1)
-                                    {
-                                        this._Choice = move;
-                                        if (rotationDirection == 0)
-                                            this._IsClockWise = false;
-                                        else
-                                            this._IsClockWise = true;
-                                        this._Quad = (short)quadrant;
-                                    }
-                                }
-                                else if (alpha >= beta)
-                                    return alpha;
                             }
-                        }
-                    }
-                    return alpha;
-                }
-                else
-                {
-                    for (int i = 0; i < maxNumerOfAvailableMoves; ++i)
-                    {
-                        for (int quadrant = 1; quadrant < 5; ++quadrant)
-                        {
-                            for (int rotationDirection = 0; rotationDirection < 2; ++rotationDirection)
+
+                            board = UndoMove(board, move, quadrant, rotationDirection);
+                            if (result < beta)
                             {
-                                move = availableMoves.ElementAt(i);
-                                possible_game = PlacePiece(move, board);
-                                possible_game = MakeRotation(quadrant, rotationDirection, possible_game);
-
-                                possible_game_string = ConvertIntArrayToString(possible_game);
-                                result = alphaBeta(possible_game, treeDepth, alpha, beta, hashTable);
-                                hashTable[possible_game_string] = result;
-
-                                board = UndoMove(board, move, quadrant, rotationDirection);
-                                if (result < beta)
+                                beta = result;
+                                if (treeDepth == 1)
                                 {
-                                    beta = result;
-                                    if (treeDepth == 1)
-                                    {
-                                        this._Choice = move;
-                                        if (rotationDirection == 0)
-                                            this._IsClockWise = false;
-                                        else
-                                            this._IsClockWise = true;
-                                        this._Quad = (short)quadrant;
-                                    }
+                                    this._Choice = move;
+                                    if (rotationDirection == 0)
+                                        this._IsClockWise = false;
+                                    else
+                                        this._IsClockWise = true;
+                                    this._Quad = (short)quadrant;
                                 }
-                                else if (beta <= alpha)
-                                    return beta;
                             }
+                            else if (beta <= alpha)
+                                return beta;
                         }
                     }
-                    return beta;
                 }
+                return beta;
             }
         }
 
@@ -246,12 +250,10 @@ namespace Pentago.AI
 
         private int[] PlacePiece(int move, int[] board)
         {
-            int piece;
             if (_Active_Turn == "COMPUTER")
-                piece = 2;
+                board[move] = 2;
             else
-                piece = 1;
-            board[move] = piece;
+                board[move] = 1;
             return board;
         }
 
@@ -288,12 +290,18 @@ namespace Pentago.AI
                 if (_Active_Turn == "COMPUTER")
                 {
                     piece = 2;
-                    newScore += CheckForPiecesLines(board, piece);
+                    int computerScore = CheckForPiecesLines(board, piece);
+                    piece = 1;
+                    int humanScore = CheckForPiecesLines(board, piece);
+                    newScore = computerScore - humanScore;
                 }
                 else
                 {
                     piece = 1;
-                    newScore += -CheckForPiecesLines(board, piece);
+                    int humanScore = -CheckForPiecesLines(board, piece);
+                    piece = 2;
+                    int computerScore = CheckForPiecesLines(board, piece);
+                    newScore = humanScore + computerScore;
                 }
             }
             return newScore;
@@ -347,30 +355,6 @@ namespace Pentago.AI
                         if (board[i] == piece && board[i - 6] == piece && board[i - 12] == piece && (board[i - 18] == piece || board[i - 18] == 0))
                             count += 15;
                 }
-
-                //Horizontal pieces
-                if (i < BOARDSIZE - 3)
-                {
-                    if (board[i] == piece && board[i + 1] == piece && board[i + 2] == piece)
-                        count += 8;
-                    if (i < BOARDSIZE - 4)
-                        if (board[i] == piece && board[i + 1] == piece && board[i + 2] == piece && board[i + 3] == piece)
-                            count += 16;
-                }
-
-                //Vertical pieces
-                if (i < BOARDSIZE - 12)
-                {
-                    if (board[i] == piece && board[i + 6] == piece && board[i + 12] == piece)
-                        count += 8;
-                    if (i < BOARDSIZE - 18)
-                        if (board[i] == piece && board[i + 6] == piece && board[i + 12] == piece && board[i + 18] == piece)
-                            count += 16;
-                }
-
-                if (i == 0)
-                    if (board[7] == piece || board[10] == piece || board[25] == piece || board[28] == piece)
-                        count += 100;
             }
             return count;
         }
