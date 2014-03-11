@@ -278,85 +278,116 @@ namespace Pentago.AI
         private int GameScore(int[] board, int treeDepth)
         {
             int newScore = 0;
-            int piece;
             int checkWinner = CheckForWin(board);
-            //tie score?
             if (checkWinner == 1)
-                newScore += -9999;
+                newScore = -9999;
             else if (checkWinner == 2)
-                newScore += 9999;
+                newScore = 9999;
             else
             {
                 if (_Active_Turn == "COMPUTER")
-                {
-                    piece = 2;
-                    int computerScore = CheckForPiecesLines(board, piece);
-                    piece = 1;
-                    int humanScore = CheckForPiecesLines(board, piece);
-                    newScore = computerScore - humanScore;
-                }
+                    newScore = CheckForPiecesLines(board, 2, 1);
                 else
-                {
-                    piece = 1;
-                    int humanScore = -CheckForPiecesLines(board, piece);
-                    piece = 2;
-                    int computerScore = CheckForPiecesLines(board, piece);
-                    newScore = humanScore + computerScore;
-                }
+                    newScore = -CheckForPiecesLines(board, 1, 2);
             }
             return newScore;
         }
 
-        private int CheckForPiecesLines(int[] board, int piece)
+        private int CheckForPiecesLines(int[] board, int piece, int enemy)
         {
-            int count = 0;
+            int countPiece = 0;
+            int countEnemy = 0;
             for (int i = 0; i < BOARDSIZE; ++i)
             {
                 //Horizontal pieces down
                 if (i % 6 == 0)
                 {
                     if (board[i] == piece && (board[i + 1] == piece || board[i + 1] == 0))
-                        count += 1;
+                        countPiece += 1;
 
                     if (board[i] == piece && board[i + 1] == piece && (board[i + 2] == piece || board[i + 2] == 0))
-                        count += 4;
+                        countPiece += 4;
 
                     if (board[i] == piece && board[i + 1] == piece && board[i + 2] == piece && (board[i + 3] == piece || board[i + 3] == 0))
-                        count += 8;
+                        countPiece += 8;
 
                     if (board[i] == piece && board[i + 1] == piece && board[i + 2] == piece && board[i + 3] == piece && (board[i + 4] == piece || board[i + 4] == 0))
-                        count += 20;
+                        countPiece += 20;
                 }
 
                 //Vertical pieces down
                 if (i >= 0 && i < 18)
                 {
                     if (board[i] == piece && (board[i + 6] == piece || board[i + 6] == 0))
-                        count += 1;
+                        countPiece += 1;
                     if (board[i] == piece && board[i + 6] == piece && (board[i + 12] == piece && board[i + 12] == 0))
-                        count += 6;
+                        countPiece += 6;
                     if (board[i] == piece && board[i + 6] == piece && board[i + 12] == piece && (board[i + 18] == piece || board[i + 18] == 0))
-                        count += 9;
+                        countPiece += 9;
                     if (i >= 12 && i < 18)
                         if (board[i] == piece && board[i + 6] == piece && board[i + 12] == piece && (board[i + 18] == piece || board[i + 18] == 0))
-                            count += 15;
+                            countPiece += 15;
                 }
 
                 //Vertical pieces up
                 if (i <= 35 && i >= 18)
                 {
                     if (board[i] == piece && (board[i - 6] == piece || board[i - 6] == 0))
-                        count += 1;
+                        countPiece += 1;
                     if (board[i] == piece && board[i - 6] == piece && (board[i - 12] == piece && board[i - 12] == 0))
-                        count += 6;
+                        countPiece += 6;
                     if (board[i] == piece && board[i - 6] == piece && board[i - 12] == piece && (board[i - 18] == piece || board[i - 18] == 0))
-                        count += 9;
+                        countPiece += 9;
                     if (i >= 12 && i < 18)
                         if (board[i] == piece && board[i - 6] == piece && board[i - 12] == piece && (board[i - 18] == piece || board[i - 18] == 0))
-                            count += 15;
+                            countPiece += 15;
+                }
+
+                //Horizontal enemys down
+                if (i % 6 == 0)
+                {
+                    if (board[i] == enemy && (board[i + 1] == enemy || board[i + 1] == 0))
+                        countEnemy += 1;
+
+                    if (board[i] == enemy && board[i + 1] == enemy && (board[i + 2] == enemy || board[i + 2] == 0))
+                        countEnemy += 4;
+
+                    if (board[i] == enemy && board[i + 1] == enemy && board[i + 2] == enemy && (board[i + 3] == enemy || board[i + 3] == 0))
+                        countEnemy += 8;
+
+                    if (board[i] == enemy && board[i + 1] == enemy && board[i + 2] == enemy && board[i + 3] == enemy && (board[i + 4] == enemy || board[i + 4] == 0))
+                        countEnemy += 20;
+                }
+
+                //Vertical enemys down
+                if (i >= 0 && i < 18)
+                {
+                    if (board[i] == enemy && (board[i + 6] == enemy || board[i + 6] == 0))
+                        countEnemy += 1;
+                    if (board[i] == enemy && board[i + 6] == enemy && (board[i + 12] == enemy && board[i + 12] == 0))
+                        countEnemy += 6;
+                    if (board[i] == enemy && board[i + 6] == enemy && board[i + 12] == enemy && (board[i + 18] == enemy || board[i + 18] == 0))
+                        countEnemy += 9;
+                    if (i >= 12 && i < 18)
+                        if (board[i] == enemy && board[i + 6] == enemy && board[i + 12] == enemy && (board[i + 18] == enemy || board[i + 18] == 0))
+                            countEnemy += 15;
+                }
+
+                //Vertical enemys up
+                if (i <= 35 && i >= 18)
+                {
+                    if (board[i] == enemy && (board[i - 6] == enemy || board[i - 6] == 0))
+                        countEnemy += 1;
+                    if (board[i] == enemy && board[i - 6] == enemy && (board[i - 12] == enemy && board[i - 12] == 0))
+                        countEnemy += 6;
+                    if (board[i] == enemy && board[i - 6] == enemy && board[i - 12] == enemy && (board[i - 18] == enemy || board[i - 18] == 0))
+                        countEnemy += 9;
+                    if (i >= 12 && i < 18)
+                        if (board[i] == enemy && board[i - 6] == enemy && board[i - 12] == enemy && (board[i - 18] == enemy || board[i - 18] == 0))
+                            countEnemy += 15;
                 }
             }
-            return count;
+            return countPiece - countEnemy;
         }
 
         public string Name
