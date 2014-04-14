@@ -1,4 +1,4 @@
 AI
 ==
 
-The following repository is for testing purposes of the AI section of Pentago.
+Repository for testing purposes of the AI section of the implementation of Pentago.
